@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Deploy production hotfix",
+    "description": "Critical bug in payment processing needs immediate deployment",
+    "dueDate": "2026-05-17T14:00:00",
+    "priority": "HIGH",
+    "status": "IN_PROGRESS"
+  },
+  {
+    "title": "Review Q2 performance metrics",
+    "description": "Analyze revenue, user growth, and customer satisfaction data",
+    "dueDate": "2026-05-20T10:00:00",
+    "priority": "MEDIUM",
+    "status": "TODO"
+  },
+  {
+    "title": "Update team wiki documentation",
+    "description": "Add onboarding guides and architecture diagrams",
+    "dueDate": "2026-05-25T16:00:00",
+    "priority": "LOW",
+    "status": "TODO"
+  },
+  {
+    "title": "Refactor authentication module",
+    "description": "Replace deprecated OAuth library with updated version",
+    "dueDate": "2026-05-22T12:00:00",
+    "priority": "HIGH",
+    "status": "TODO"
+  },
+  {
+    "title": "Conduct user interviews",
+    "description": "Interview 10 customers about new feature feedback",
+    "dueDate": "2026-05-18T15:30:00",
+    "priority": "MEDIUM",
+    "status": "IN_PROGRESS"
+  },
+  {
+    "title": "Organize team building event",
+    "description": "Plan and book venue for June team offsite",
+    "dueDate": "2026-05-30T17:00:00",
+    "priority": "LOW",
+    "status": "TODO"
+  },
+  {
+    "title": "Write API integration guide",
+    "description": "Complete developer documentation for external partners",
+    "dueDate": "2026-05-19T11:00:00",
+    "priority": "HIGH",
+    "status": "DONE"
+  },
+  {
+    "title": "Upgrade database server",
+    "description": "Migrate from PostgreSQL 13 to 15 during maintenance window",
+    "dueDate": "2026-05-24T03:00:00",
+    "priority": "MEDIUM",
+    "status": "TODO"
+  }
+]

@@ -1,0 +1,1618 @@
+Prompt 1:
+I'm building a Java 17 REST API for a personal task manager as part of a backend engineering assessment. I need you to help me build this thoughtfully and iteratively phase by phase.
+Already Set Up:
+- Spring Boot 3.5.14 with Maven
+- Package: com.eulerity.taskmanager
+- Dependencies: Spring Web, Spring Data JPA, H2, Validation
+- H2 database configured with create-drop mode
+- Server running on port 8080
+- Main application class:TaskmanagerApplication.java
+
+Architecture I thought of: Controller Layer → Service Layer → Repository Layer → Database (H2)
+My planned package structure:
+In com.eulerity.taskmanager/
+TaskmanagerApplication.java (main file)
+In package controller/ - TaskController.java, AIController.java
+In package service/ - TaskService.java,  AIService.java
+In package repository/ -  TaskRepository.java
+In package model/ - Task.java, Priority.java (enum) , Status.java (enum)
+In package dto/ - TaskRequest.java, TaskResponse.java , AITaskSuggestionRequest.java, AITaskSuggestionResponse.java
+
+Required Features
+
+CRUD Endpoints:
+- POST /tasks - Create new task
+- GET /tasks - List all tasks
+- GET /tasks/{id} - Get single task
+- PUT /tasks/{id} - Update task
+- DELETE /tasks/{id} - Delete task
+
+AI-Powered Endpoint
+- POST /tasks/suggest
+  - Accepts a plain-language description
+  - Returns a structured task suggestion with title, description, dueDate, priority, and status
+
+Potential Stretch Features (only if time permits):
+- POST /tasks/{id}/summarize
+- POST /tasks/{id}/breakdown
+
+Simple UI:
+- Basic HTML page to view tasks, create tasks, and test AI endpoint
+- No fancy styling required - functionality only
+
+Tests:
+- Unit tests for service layer methods
+- Integration tests for all endpoints
+- Mocked AI endpoint tests
+
+Edge Cases I found to Handle
+
+Data Validation:
+- Null/empty title → reject with 400
+- Invalid enum values → reject with 400
+- Due date in the past → reject with 400
+- Description exceeding max length → reject with 400
+
+API Behavior:
+- GET/PUT/DELETE non-existent task → 404 with meaningful message
+- Malformed JSON → 400 with field-level errors
+- AI API timeout → graceful error message
+- Invalid AI response format → fallback handling
+
+AI Endpoint Specific:
+- Very vague input ("remind me about stuff") → handle gracefully
+- Missing API key → clear error message
+- Rate limiting scenarios
+
+
+I want to build this in phases. Do NOT give me all the code at once.
+For each phase:
+1. I’ll tell you what to build.
+2. You provide complete code for that phase only.
+3. I’ll test it and give feedback.
+4. We iterate if needed.
+5. Then we move to the next phase.
+
+After each phase, wait for my feedback before moving to the next phase.
+Before writing Phase 1 code, briefly comment on whether this architecture is appropriate for the assessment and suggest only minimal changes if needed.
+
+Phase 1: Domain Model
+
+I need you to build this API step by step, starting with the domain model.
+
+Create a Task entity class, with these specifications:
+
+Fields:
+- id: Long, auto-generated
+- title: String, required, max 200 characters
+- description: String, optional, max 1000 characters
+- dueDate: LocalDateTime, required, must be in the future
+- priority: enum (LOW, MEDIUM, HIGH), required
+- status: enum (TODO, IN_PROGRESS, DONE), required, defaults to TODO
+- createdAt: LocalDateTime, auto-set on creation
+- updatedAt: LocalDateTime, auto-updated on modification
+
+Requirements:
+- Use JPA annotations (@Entity, @Table, @Id, @GeneratedValue, etc.)
+- Use Bean Validation annotations (@NotNull, @NotBlank, @Size, @Future)
+- Include a no-args constructor (required by JPA)
+- Include a constructor with all fields except id, createdAt, updatedAt
+- Include explicit getters and setters (don't use Lombok)
+- Create Priority and Status enums as separate files in the model package
+- Use @CreatedDate and @LastModifiedDate for audit fields. If additional auditing configuration is required, explain what should be added and where.
+
+Provide complete code for:
+1. Task.java - Full entity with all annotations, constructors, getters/setters
+2. Priority.java - Enum with LOW, MEDIUM, HIGH
+3. Status.java - Enum with TODO, IN_PROGRESS, DONE
+
+Include:
+- Full package declarations (com.eulerity.taskmanager.model)
+- All necessary imports
+- JavaDoc comments explaining the class purpose
+- Proper formatting
+
+Once you provide this code, I'll create the files, test the application startup, and let you know if there are any issues before we move to Phase 2 (Repository Layer).
+
+
+
+
+
+PROMPT 2:
+I noticed a potential issue with @Future on Task.dueDate.
+
+If a task becomes overdue, then later PUT requests could fail validation even if the user is only trying to:
+mark the task as DONE
+update the description
+change the priority
+
+I want to avoid overengineering with validation groups unless truly necessary.
+
+Would it be better to:
+1. Keep @Future as-is
+2. Remove @Future from the entity and validate future dates only during task creation/business logic
+3. Use separate validation behavior for create vs update operations
+
+Please recommend the simplest maintainable approach for this assessment scope and explain the tradeoffs before we move to Phase 2.
+
+PROMPT 3
+Change applied and I verified. Validation strategy is clear.
+
+As planned in the architecture, we’ll later include centralized exception handling for:
+- exception/TaskNotFoundException.java
+- exception/GlobalExceptionHandler.java
+
+We do not need to implement these yet, but they will support proper handling for 404s, validation errors, malformed JSON, and other API edge cases.
+
+Phase 2: Repository Layer
+
+Create TaskRepository interface with these specifications:
+- Package: com.eulerity.taskmanager.repository
+- Extend JpaRepository<Task, Long>
+- No custom query methods needed (basic CRUD is sufficient for core requirements)
+- Include necessary imports
+- Add JavaDoc comment explaining the repository's purpose
+
+Provide complete code for TaskRepository.java only.
+
+
+PROMPT 4
+Ok. Phase 2 complete. Repository looks good.
+
+Phase 3: Now let’s first create the DTOs because I don’t want controllers to directly use the database entity. DTOs will keep request validation cleaner and separate API data from persistence logic.
+Create DTOs needed for the task CRUD API.
+
+Package: com.eulerity.taskmanager.dto
+
+Create:
+1. TaskRequest.java
+2. TaskResponse.java
+
+TaskRequest should include:
+- title: String, required, max 200 characters
+- description: String, optional, max 1000 characters
+- dueDate: LocalDateTime, required, must be in the future
+- priority: Priority, required
+- status: Status, optional/defaulted later to TODO if null
+
+Validation:
+- Use @NotBlank, @Size, @NotNull, @Future where appropriate
+- Put @Future on TaskRequest.dueDate, not the Task entity, because API input validation belongs at the boundary
+
+TaskResponse should include:
+- id
+- title
+- description
+- dueDate
+- priority
+- status
+- createdAt
+- updatedAt
+
+Requirements:
+- Use regular classes
+- Explicit constructors, getters, and setters
+- Include package declarations and imports
+- Add JavaDoc comments
+
+Provide complete code for TaskRequest.java and TaskResponse.java only.
+
+PROMPT 5:
+Both DTOs created and compile successfully.
+
+Before moving forward, one refinement to TaskResponse:
+
+Since TaskResponse is only serialized outward and never modified after construction, it should be immutable. Please update TaskResponse to:
+- Remove all the setters
+- Keep the all-args constructor and getters only
+- Remove the no-args constructor (not needed since Jackson only deserializes this for outbound serialization)
+
+This follows proper DTO design semantics: requests are mutable (Jackson needs setters for inbound deserialization), responses are immutable (only constructed and sent outbound).
+
+Also, a correction on phase order: Phase 4 is Exception Handling (TaskNotFoundException, GlobalExceptionHandler), not Service layer yet. Service comes in Phase 5.
+
+Please provide the updated TaskResponse.java.
+
+PROMPT 6:
+Ok. Phase 3 complete. TaskResponse is now properly immutable with final fields. Both DTOs compile successfully.
+
+Phase 4: Exception Handling
+
+Create centralized exception handling for proper API error responses.
+
+Package: com.eulerity.taskmanager.exception
+
+Create:
+1. TaskNotFoundException.java - custom exception for missing tasks
+2. GlobalExceptionHandler.java - @RestControllerAdvice for handling API errors
+
+TaskNotFoundException should:
+- Extend RuntimeException
+- Accept a task ID in the constructor
+- Include a helpful message like "Task not found with id: {id}"
+
+GlobalExceptionHandler should handle:
+- TaskNotFoundException → 404 with error message
+- MethodArgumentNotValidException → 400 with field-level validation errors
+- HttpMessageNotReadableException → 400 for malformed JSON or invalid enum values
+- General exceptions → 500 with generic error message
+
+Use @ExceptionHandler and return ResponseEntity with proper HTTP status codes and simple structured JSON response bodies.
+
+Provide complete code for both files only.
+
+
+PROMPT 7
+Phase 4 complete. Exception handling implemented with proper status codes and structured error responses.
+
+Phase 5: TaskService
+
+Create the service layer with business logic for CRUD operations.
+
+Package: com.eulerity.taskmanager.service
+
+Create TaskService class with these specifications:
+
+Required methods:
+- createTask(TaskRequest request) → TaskResponse
+  - Validate dueDate is in the future
+  - Map TaskRequest to Task entity
+  - Default status to TODO if null
+  - Save the task
+  - Map saved Task entity to TaskResponse
+
+- getAllTasks() → List<TaskResponse>
+  - Return all tasks from repository mapped to TaskResponse
+
+- getTaskById(Long id) → TaskResponse
+  - Find task by ID
+  - Throw TaskNotFoundException if not found
+  - Map Task to TaskResponse
+
+- updateTask(Long id, TaskRequest request) → TaskResponse
+  - Find existing task or throw TaskNotFoundException
+  - If dueDate is being changed AND the new date is in the past, reject it
+  - Allow updating overdue tasks when only changing status/description/priority
+  - Update fields from request
+  - Default status to TODO if null
+  - Save updated task
+  - Map saved Task to TaskResponse
+
+- deleteTask(Long id) → void
+  - Find task or throw TaskNotFoundException
+  - Delete the task
+
+Requirements:
+- Use @Service annotation
+- Inject TaskRepository via constructor
+- Use private helper method to map Task → TaskResponse
+- Handle the dueDate validation edge case we discussed earlier
+- Include JavaDoc comments
+
+Provide complete code for TaskService.java only.
+
+
+PROMPT 8:
+Phase 5 complete. TaskService implemented correctly.
+
+Understood on the @Valid note:
+- POST /tasks will use @Valid so create requests get full DTO validation, including @Future.
+- PUT /tasks/{id} will not use @Valid because updates to overdue tasks should still be allowed. The service layer will handle the dueDate business rule.
+
+Now Phase 6: TaskController
+
+Create a REST controller with CRUD endpoints.
+
+Package: com.eulerity.taskmanager.controller
+
+Create TaskController with these endpoints:
+- POST /tasks → createTask
+- GET /tasks → getAllTasks
+- GET /tasks/{id} → getTaskById
+- PUT /tasks/{id} → updateTask
+- DELETE /tasks/{id} → deleteTask
+
+Requirements:
+- Use @RestController
+- Base path should be /tasks
+- Inject TaskService via constructor
+- POST should use @Valid on TaskRequest and return 201 Created
+- PUT should NOT use @Valid on TaskRequest because service handles update-specific validation
+- GET endpoints should return 200 OK
+- DELETE should return 204 No Content
+- Use ResponseEntity for clear status codes
+- Include JavaDoc comments
+
+Provide complete code for TaskController.java only.
+
+Key : AIzaSyBRreRcGSlxxqbNsL8oyGPVGaeyAR66P2I
+PROMPT 9:
+Phase 6 complete. All CRUD endpoints working, including overdue-task edge case.
+
+Phase 7: AI-Powered Task Suggestion
+Architectural Decision: I want to implement the AI integration using a provider-based architecture with an AIProvider interface rather than a single concrete AIService.
+This allows:
+- Easy swapping between AI models (Gemini, Claude, GPT-4) without changing controller code - Better testability (can mock the provider interface)
+- Follows Dependency Inversion Principle
+- Keeps the external AI integration isolated if we later add fallback providers or switch models.
+Keep the provider abstraction lightweight - do not add extra factories or unnecessary configuration classes.
+Create an AI endpoint with a provider-based architecture:
+Endpoint: POST /tasks/suggest
+
+Configuration:
+- application.properties contains: gemini.api.key=${GEMINI_API_KEY}
+- I have my Gemini API key ready
+- I'll provide it via IntelliJ environment variable: GEMINI_API_KEY
+
+Create these files:
+- dto/AITaskSuggestionRequest.java
+- dto/AITaskSuggestionResponse.java
+- service/AIProvider.java (interface)
+- service/GeminiAIService.java (implements AIProvider)
+- service/AIService.java (facade that uses AIProvider)
+- controller/AIController.java
+
+AITaskSuggestionRequest:
+- description: String, @NotBlank, @Size(max=1000)
+
+AITaskSuggestionResponse:
+- suggestedTask: TaskRequest
+- reasoning: String
+
+AIProvider interface:
+- Single method: suggestTask(String description) → AITaskSuggestionResponse
+- This interface allows swapping AI providers (Gemini, Claude, GPT-4) without changing controller/service code
+
+GeminiAIService (implements AIProvider):
+- @Service annotation
+- @Value("${gemini.api.key}") to inject API key
+- Use Java 17 HttpClient
+- Use Jackson ObjectMapper
+- Gemini API endpoint: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}
+- HTTP POST with Content-Type: application/json
+- Request body should ask Gemini to return ONLY valid JSON with:
+  - title
+  - description
+  - dueDate (ISO LocalDateTime format, e.g., 2026-12-20T18:00:00)
+  - priority (LOW, MEDIUM, HIGH)
+  - status (TODO)
+  - reasoning (brief explanation)
+- Parse Gemini response from: candidates[0].content.parts[0].text
+- Strip markdown code fences if present (```json...```)
+- Error handling:
+  - Missing API key → IllegalArgumentException
+  - Non-200 responses → include status code and response body for debugging
+  - Timeout/interrupted → handle gracefully
+  - Malformed JSON → clear error message
+
+AIService:
+- @Service annotation
+- Constructor-inject AIProvider
+- Single method: generateTaskSuggestion(AITaskSuggestionRequest request) → AITaskSuggestionResponse
+- Delegates to AIProvider.suggestTask()
+- This layer allows adding cross-cutting concerns later (logging, caching, fallback providers)
+
+AIController:
+- @RestController
+- Base path: /tasks
+- POST /suggest
+- @Valid AITaskSuggestionRequest
+- Inject AIService
+- Return 200 OK with AITaskSuggestionResponse
+
+Important:
+- Does NOT persist to database
+- Returns suggestion only
+- Use regular classes
+- Include constructors, getters/setters, imports, JavaDoc
+
+Provide complete code for all 6 files only.
+
+PROMPT 10:
+Small update:
+I switched the Gemini model from gemini-1.5-flash to gemini-2.5-flash because the older model string returned 404/not supported for the v1beta generateContent endpoint.
+
+Everything works now - POST /tasks/suggest successfully returns structured task suggestions from Gemini.
+
+
+PROMPT 11
+Phase 8: Tests
+Create a comprehensive test suite covering service layer, integration tests, and AI functionality.
+
+Requirements from assessment:
+- At least one unit test per service-layer method (happy path)
+- At least one integration test per CRUD endpoint (end-to-end with Spring context)
+- At least one test for AI endpoint (mocking the external API call)
+- Tests must pass when running: ./mvnw test
+
+Create test files:
+- src/test/java/com/eulerity/taskmanager/service/TaskServiceTest.java
+- src/test/java/com/eulerity/taskmanager/controller/TaskControllerIntegrationTest.java
+- src/test/java/com/eulerity/taskmanager/service/AIServiceTest.java
+
+TaskServiceTest specifications:
+- Use JUnit 5 (@Test, assertions)
+- Mock TaskRepository with @Mock
+- Use @InjectMocks for TaskService
+- Test all 5 methods: createTask, getAllTasks, getTaskById, updateTask, deleteTask
+- Happy path only for each method
+- Verify repository interactions with verify()
+
+TaskControllerIntegrationTest specifications:
+- Use @SpringBootTest(webEnvironment = RANDOM_PORT)
+- Use @TestPropertySource to set gemini.api.key=test-key so Spring context can start without real API key
+- Use @Autowired TestRestTemplate
+- Test all 5 CRUD endpoints end-to-end with actual Spring context (NOT /tasks/suggest)
+- POST /tasks → verify 201 Created with response body
+- GET /tasks → verify 200 OK with task list
+- GET /tasks/{id} → verify 200 OK with single task
+- PUT /tasks/{id} → verify 200 OK with updated task
+- DELETE /tasks/{id} → verify 204 No Content
+- Test 404 case: GET /tasks/999 → verify 404 with error message
+- Test validation: POST /tasks with blank title → verify 400 with validation errors
+
+AIServiceTest specifications:
+- Use JUnit 5
+- Mock AIProvider with @Mock
+- Use @InjectMocks for AIService
+- Test generateTaskSuggestion() happy path
+- Verify AIProvider.suggestTask() is called with correct description
+
+Requirements:
+- Use JUnit 5 (org.junit.jupiter.api.Test)
+- Use Mockito for mocking (@Mock, @InjectMocks)
+- Include @BeforeEach setup methods where needed
+- Use proper assertions (assertEquals, assertNotNull, assertThrows)
+- Include package declarations and imports
+- Do not make real external Gemini API calls in tests
+
+Provide complete code for all 3 test files only.
+
+
+
+PROMPT 12:
+
+Phase 8 complete. All tests are passing.
+
+Phase 9: Simple UI
+
+Create a basic HTML page for interacting with the task manager API.
+
+Requirements:
+- Single HTML file: src/main/resources/static/index.html
+- View all tasks (GET /tasks)
+- Create new task form (POST /tasks)
+- Test AI suggestion (POST /tasks/suggest)
+- Use fetch API for AJAX calls
+- No fancy CSS needed - basic functionality only
+- Use <input type="datetime-local"> for dueDate (produces ISO format compatible with LocalDateTime)
+- Automatically refresh the task list after successful task creation
+- Display API error messages to the user
+
+Features needed:
+1. Section to display all tasks in a simple table
+2. Form to create a new task with fields: title, description, dueDate, priority (dropdown), status (dropdown)
+3. Form to test AI suggestion with description field and "Suggest Task" button
+4. Display AI suggestion result so user can review before creating
+
+Keep it simple
+Provide complete index.html file only.
+
+
+
+PROMPT 13:
+The UI is using browser default validation popups. I want custom error messages displayed next to each field instead.
+Update index.html to:
+
+1. Add novalidate attribute to the create form to disable browser validation
+2. Add custom JavaScript validation in createTask() function that:
+   - Validates title is not blank
+   - Validates dueDate is not blank
+   - Validates dueDate is in the future (not past)
+   - Displays error messages in red text next to each field
+   - Prevents API call if validation fails
+3. Add error message spans next to each input field (initially hidden)
+4. Clear individual field errors on 'input' event (when user starts typing)
+5. Clear all error messages when form validates successfully
+6. Same validation approach for AI suggestion form (description required)
+7. Use a reusable helper like showFieldError(fieldId, message) for consistency
+
+Error message styling:
+- Red text (color: red)
+- Small font size
+- Appears directly below/next to the field
+
+Important:
+- Keep server-side validation unchanged, this is only client-side UX improvement
+- Validate on submit before making API call
+
+Provide updated index.html only.
+
+PROMPT 14:
+Phase 10: UI Enhancement
+Improve the UI with full CRUD operations, better structure, and professional styling.
+
+Requirements:
+
+1. File Structure:
+   - Move JavaScript to: src/main/resources/static/js/app.js
+   - Add basic CSS to: src/main/resources/static/css/styles.css
+   - Keep HTML: src/main/resources/static/index.html (link to external JS/CSS)
+
+2. Add Full CRUD Operations:
+   - Delete button in each task row with confirmation dialog
+   - Edit button in each task row that:
+       Opens inline edit mode OR modal dialog
+       Pre-fills form with existing task data
+       Calls PUT /tasks/{id} on save
+       Updates table on success
+   - Display success/error messages for edit and delete operations
+
+3. Improved Styling:
+   - Professional, clean design (modern but simple)
+   - Better color scheme (use subtle colors, not harsh)
+   - Responsive layout that works on mobile
+   - Hover effects on buttons and table rows
+   - Better spacing and typography
+   - Action buttons (Edit/Delete) styled differently from primary buttons
+
+4. Table Enhancements:
+   - Add "Actions" column with Edit and Delete buttons
+   - Better table styling with alternating row colors
+   - Truncate long descriptions with ellipsis
+
+5. Keep All Existing Features:
+   - Custom validation with inline error messages
+   - AI suggestion with form pre-fill
+   - Auto-refresh after create/edit/delete
+
+Technical Notes:
+- Use modern JavaScript (ES6+)
+- Keep backend validation unchanged
+- All operations should display success/error feedback
+- Delete requires confirmation: "Delete task: [title]?"
+- Edit should validate same as create (title required, future date)
+- Do NOT modify any Java files, application.properties, pom.xml, or test files
+Provide all 3 files:
+- index.html
+- css/styles.css
+- js/app.js
+
+
+
+
+
+PROMPT 15:
+I received app.js and styles.css but the index.html you provided still has inline scripts and styles.
+
+I need the NEW index.html that:
+- Links to /css/styles.css in the <head>
+- Links to /js/app.js before </body>
+- Has the updated HTML structure with:
+     Edit modal dialog
+     Actions column in table with Edit/Delete buttons
+     Proper form structure matching the new app.js
+     All inline <script> and <style> removed
+
+The current index.html still has the old inline code. Provide the corrected index.html that works with the app.js and styles.css you already provided.
+
+
+
+
+
+
+PROMPT 16:
+
+Fix UX issues with delete confirmation and alert messages.
+Issues to fix:
+1. Delete Confirmation Modal:
+   - Replace browser's native confirm() dialog with a custom styled modal
+   - Match the design of the edit modal (modern, clean)
+   - Show task title in confirmation message
+   - Have "Cancel" (secondary) and "Delete" (danger/red) buttons
+   - Close modal on Cancel or successful delete
+   - Keep same delete functionality (DELETE /tasks/{id})
+
+2. Alert Message Management:
+   - Clear ALL alert messages (task-msg, create-msg, ai-msg, edit-form-msg) when performing any new action:
+      When deleting → clear task-msg and create-msg
+       When editing → clear task-msg and create-msg
+       When creating → clear task-msg
+       When suggesting AI → clear previous messages
+   - Auto-dismiss success (green) messages after 5 seconds
+   - Error (red) and info (blue) messages stay until user takes action
+   - Implement clearTimeout mechanism to avoid conflicts
+
+3. Clean State Management:
+   - Ensure no stale success messages persist across different operations
+   - Each action should start with a clean slate
+
+Technical notes:
+- Add confirmation modal HTML to index.html (dialog element)
+- Reuse existing modal styles from edit modal
+- Update deleteTask() function in app.js to use custom modal
+- Create clearAllAlerts() helper function
+- Implement auto-dismiss with setTimeout for success alerts only
+
+Provide updated versions of:
+- index.html (add confirmation modal)
+- js/app.js (modal logic, alert management, auto-dismiss)
+Do NOT modify any Java files, application.properties, pom.xml, or test files
+
+
+PROMPT 17:
+CRITICAL: Fix the delete confirmation and alert management issues in app.js.
+
+Required changes to app.js:
+
+1. Replace the deleteTask function to use the custom confirmation modal instead of browser confirm():
+   - Clear all alerts first
+   - Store the pending delete ID and title in state variables
+   - Set the confirmation message text in the confirm-msg element
+   - Open the confirm-modal dialog using showModal()
+   - Do NOT make the API call yet
+
+2. Add a confirmDelete function that performs the actual deletion:
+   - Check if pendingDeleteId exists
+   - Make the DELETE API call using the pending ID
+   - On success: close the modal, show success alert, refresh task list
+   - On error: show error alert
+   - Handle network errors appropriately
+
+3. Add a closeConfirmModal function:
+   - Close the confirm-modal dialog
+   - Reset pendingDeleteId and pendingDeleteTitle to null
+
+4. Add a clearAllAlerts function that:
+   - Clears all four alert elements: task-msg, create-msg, ai-msg, edit-form-msg
+   - Cancels any active auto-dismiss timer
+
+5. Update the showAlert function to auto-dismiss success messages:
+   - Cancel any existing timer for the same element before setting a new one
+   - If the alert type is 'ok', set a 5-second timer to clear it automatically
+   - Store the timer and target element ID in state variables
+   - Error and info messages should NOT auto-dismiss
+
+6. In the createTask function, add a call to clear task-msg before clearing create-msg to prevent stale success messages from other operations
+
+Required changes to styles.css:
+
+7. Add styling for the btn-danger class:
+   - Red background and white text
+   - Darker red on hover
+
+These changes will eliminate browser popups, provide professional modals, and auto-dismiss success messages.
+
+Provide the complete updated app.js and styles.css files only. Do NOT modify index.html, Java files, application.properties, pom.xml, or test files.
+
+
+PROMPT 18:
+Add filtering and sorting capabilities to the task management API and UI.
+
+IMPLEMENTATION APPROACH:
+Keep this implementation simple and assessment-focused. Since this is an in-memory H2 task manager with no pagination requirement, implement filtering/sorting in the service layer using Java streams and comparators. Do not add complex custom queries or specifications.
+
+BACKEND CHANGES:
+
+1. TaskRepository:
+   - No changes needed (keep existing JpaRepository<Task, Long>)
+
+2. TaskService:
+   - Add method: getAllTasks(Status status, Priority priority, String sortBy, String sortOrder)
+   - All parameters optional (nullable)
+   - Fetch all tasks from repository
+   - Filter using streams (filter by status if provided, filter by priority if provided)
+   - Sort using Comparator (sortBy: dueDate, priority, createdAt, title)
+   - VALIDATION: If sortBy is null/blank or unsupported, use default "createdAt"
+   - VALIDATION: If sortOrder is null/blank or unsupported, use default "desc"
+   - Default sort: createdAt descending (newest first)
+   - Return List<TaskResponse>
+
+3. TaskController GET /tasks endpoint:
+   - Add query parameters: status, priority, sortBy, sortOrder
+   - All optional using @RequestParam(required = false)
+   - Example: GET /tasks?status=TODO&priority=HIGH&sortBy=dueDate&sortOrder=asc
+   - Delegate to updated service method
+
+FRONTEND CHANGES:
+
+4. Add filtering UI above the task table:
+   - Dropdown for Status filter (All, TODO, IN_PROGRESS, DONE)
+   - Dropdown for Priority filter (All, LOW, MEDIUM, HIGH)
+   - Dropdown for Sort By (Due Date, Priority, Created, Title)
+   - Dropdown for Sort Order (Ascending, Descending)
+   - Apply Filters button
+   - Clear Filters button (resets to default view)
+
+5. Update JavaScript:
+   - Modify loadTasks() function to accept optional filter/sort parameters
+   - Build query string from selected dropdown values
+   - Send GET request to /tasks with query parameters
+   - Wire up Apply Filters and Clear Filters buttons
+   - IMPORTANT: Preserve current filters when refreshing after create/edit/delete operations
+   - Store current filter state and reapply it when loadTasks() is called after CRUD operations
+
+TECHNICAL NOTES:
+- Use Java 17 stream API and Comparator for filtering/sorting
+- Handle null parameters gracefully with validation
+- Keep sorting logic simple and readable
+- Update existing TaskControllerIntegrationTest to verify filtering works
+- No pagination needed
+
+Provide updated files:
+- TaskService.java
+- TaskController.java
+- index.html (add filter UI section)
+- app.js (update loadTasks, add filter state preservation, add filter handlers)
+- TaskControllerIntegrationTest.java (add 1-2 filter tests)
+
+
+PROMPT 19:
+Please show me all the updated files for the filtering/sorting feature. I need to review them before accepting.
+
+Do not write or modify files yet - only display the proposed content for review.
+
+Show the complete updated versions of:
+1. TaskController.java
+2. index.html
+3. app.js
+4. styles.css
+5. TaskControllerIntegrationTest.java
+
+Display each file in full so I can review the changes before accepting them.
+
+
+PROMPT 20:
+Perfect, I have reviewed the files! Please write all 5 files:
+1. TaskController.java
+2. index.html
+3. app.js
+4. styles.css
+5. TaskControllerIntegrationTest.java
+Do not modify any other files.
+
+
+Prompt 21:
+Add task search functionality integrated with the existing filtering/sorting system.
+
+GOAL:
+Allow users to search tasks by ID or title from both the UI and API. Keep this simple and consistent with the existing stream-based filtering approach.
+
+IMPLEMENTATION APPROACH:
+Implement search in the service layer using Java streams, matching the current filtering/sorting pattern. Do not add complex repository queries or change the architecture.
+
+BACKEND CHANGES:
+
+1. TaskService.java:
+   - Update getAllTasks() method signature to:
+     getAllTasks(Status status, Priority priority, String sortBy, String sortOrder, String search)
+   - Add search parameter as optional (nullable)
+   - Search logic using streams:
+     * If search is null/blank: no filtering (return all)
+     * If search is numeric (matches pattern): filter by exact ID match
+     * If search is text: filter by title contains search (case-insensitive)
+   - Search filter should work TOGETHER with existing status/priority filters
+   - Preserve existing sorting behavior
+   - Keep backward compatibility with existing no-args getAllTasks()
+
+2. TaskController.java:
+   - Add @RequestParam(required = false) String search to getAllTasks() endpoint
+   - Pass search parameter to service layer
+   - Example API calls:
+     * GET /tasks?search=meeting
+     * GET /tasks?search=3
+     * GET /tasks?status=TODO&search=report&sortBy=dueDate&sortOrder=asc
+
+FRONTEND CHANGES:
+
+3. index.html:
+   - Add search input field in the filter bar (before or after existing filters)
+   - Input should have:
+     * id="filter-search"
+     * placeholder="Search by ID or title..."
+     * type="text"
+   - Keep existing filter dropdowns and Apply/Clear buttons
+   - Search input should visually integrate with existing filter bar design
+
+4. app.js:
+   - Add search property to currentFilters state object (default: empty string)
+   - Update loadTasks() to include search in URLSearchParams if present
+   - Update applyFilters() to read search input value
+   - Update clearFilters() to:
+     * Reset search property to empty string
+     * Clear search input field value
+   - Search state must be preserved after create/edit/delete operations (same as other filters)
+
+UX REQUIREMENTS:
+- Search works in combination with status filter, priority filter, and sorting
+- Empty search returns all tasks (no filtering)
+- Search is case-insensitive for title matching
+- All existing features continue working unchanged
+- Filter preservation after CRUD operations includes search state
+
+NOTES:
+- Use String.toLowerCase() for case-insensitive matching
+- Use String.contains() for title matching
+- For numeric detection, use simple try-catch with Long.parseLong() or regex
+- Keep code readable and simple
+- No pagination needed
+- No repository changes
+- No complex query DSL
+
+TESTS (OPTIONAL):
+Add 1-2 integration tests to TaskControllerIntegrationTest.java:
+- Test title search returns matching tasks
+- Test ID search returns exact task
+
+FILES TO UPDATE:
+1. TaskService.java
+2. TaskController.java
+3. index.html
+4. app.js
+5. TaskControllerIntegrationTest.java (optional tests)
+
+CRITICAL:
+- Do NOT modify models, DTOs, repositories, AI functionality, or existing CRUD operations
+- Preserve backward compatibility by keeping the existing no-args getAllTasks() method and   adding/updating only the parameterized overload with search.
+- Preserve all existing features: filters, sorting, modals, validation, alerts
+Display the proposed content and once i select yes after reviewing then write
+
+
+PROMPT 22:
+Looks great overall. Please fix one issue before writing:
+
+TaskService.java has a duplicate default case inside the comparator switch statement (lines 86-89) :  remove the duplicate default block so there's only ONE default case.
+
+Keep all other files exactly as shown. Do NOT add @Valid to the updateTask() endpoint in TaskController.java - the current design intentionally omits it to allow overdue task updates.
+
+After fixing the duplicate default case, write all 6 files:
+1. TaskService.java
+2. TaskController.java
+3. index.html
+4. app.js
+5. styles.css
+6. TaskControllerIntegrationTest.java
+
+
+PROMPT 23:
+
+Continue writing the remaining files only:
+app.js
+styles.css
+TaskControllerIntegrationTest.java
+Do not modify TaskService.java or TaskController.java again.
+
+You still need to update 2 more files. Please write:
+
+1. TaskController.java - Add @RequestParam(required = false) String search to the getAllTasks() method and pass it to the service
+2. index.html - Add the search input field with id="filter-search" to the filter bar
+
+Write these 2 files now.
+
+
+
+PROMPT 24:
+Getting Compilation error: TaskController.java is calling getAllTasks() with 4 parameters but the service now expects 5.
+
+Update TaskController.java:
+1. Add @RequestParam(required = false) String search to the getAllTasks() method parameters
+2. Pass search to taskService.getAllTasks(status, priority, sortBy, sortOrder, search)
+
+Write only TaskController.java.
+
+
+
+
+
+PROMPT 25:
+Yes. Please update index.html to add the search input field to the filter bar.
+Requirements:
+Add:
+Place it near the existing filter dropdowns
+Keep styling/classes consistent with the current filter bar
+Do not modify any other functionality
+Write only index.html.
+
+
+PROMPT 26:
+Please update index.html to add the search field beside the Clear button in the filter bar.
+Requirements:
+Add:
+Place it immediately before the Apply and Clear buttons
+Use the same filter-group styling structure as existing filters
+Add label: "Search"
+Keep all existing filters/buttons unchanged
+Write only index.html.
+
+PROMPT 27:
+Update index.html to add the search input field to the filter bar.
+
+Current state: The filter bar starts at line 27 with <div class="filter-bar"> and currently contains 4 filter dropdowns (Status, Priority, Sort By, Order) plus Apply/Clear buttons.
+
+Required change: Add a search input field as the FIRST filter-group inside the filter-bar, before all existing dropdowns.
+
+Add these lines immediately after line 28 (<div class="filter-bar">):
+
+            <div class="filter-group filter-group-search">
+                <label for="filter-search">Search</label>
+                <input type="text" id="filter-search" placeholder="Search by ID or title...">
+            </div>
+
+Keep all existing filter groups and buttons unchanged.
+
+The final structure should be:
+1. Search input (NEW)
+2. Status dropdown (existing)
+3. Priority dropdown (existing)
+4. Sort By dropdown (existing)
+5. Order dropdown (existing)
+6. Apply/Clear buttons (existing)
+
+Write only index.html.
+
+
+
+
+
+PROMPT 28:
+Ok I added manually the changes and reviewed search functionality works. But I want to Improve the task list search/filter UX by separating search and filters into two distinct rows.
+
+CURRENT ISSUES:
+- Search is mixed with filter dropdowns in one row
+- Apply/Clear buttons control both search and filters together (confusing)
+- Refresh button in header is redundant
+
+NEW LAYOUT:
+
+Row 1 - Search Bar (above filters):
+- Large search input: id="filter-search", placeholder="Search by ID or title..."
+- Button: "Search" (applies search, preserves filters)
+- Button: "Clear Search" (clears search only, preserves filters)
+
+Row 2 - Filter Bar (below search):
+- Status dropdown
+- Priority dropdown
+- Sort By dropdown
+- Order dropdown
+- Button: "Apply Filters"
+- Button: "Clear Filters"
+
+REMOVE:
+- Refresh button from card header
+
+JAVASCRIPT BEHAVIOR:
+
+1. Search button (new function: applySearch()):
+   - Read search input value
+   - Update currentFilters.search
+   - Keep existing status, priority, sortBy, sortOrder unchanged
+   - Call loadTasks()
+
+2. Clear Search button (new function: clearSearch()):
+   - Clear search input field
+   - Set currentFilters.search = ''
+   - Keep existing status, priority, sortBy, sortOrder unchanged
+   - Call loadTasks()
+   - Pressing Enter inside the search input should trigger applySearch()
+
+3. Apply Filters button (update existing applyFilters()):
+   - Read all 4 dropdown values (status, priority, sortBy, sortOrder)
+   - Update currentFilters for those 4 fields
+   - Keep existing currentFilters.search unchanged
+   - Call loadTasks()
+
+4. Clear Filters button (update existing clearFilters()):
+   - Reset only dropdowns to defaults: status='', priority='', sortBy='createdAt', sortOrder='desc'
+   - Clear dropdown field values
+   - Keep currentFilters.search unchanged (preserve search text)
+   - Call loadTasks()
+
+STYLING (styles.css):
+- First row (.search-bar) should be full-width with larger input
+- Second row (.filter-bar) remains compact with existing filter-group styling
+- Both rows should have consistent spacing
+
+FILES TO UPDATE:
+1. index.html - Restructure into two rows, remove Refresh button
+2. app.js - Add applySearch() and clearSearch() functions, update applyFilters() and clearFilters()
+3. styles.css - Add .search-bar styling, adjust spacing
+
+Do not modify any backend/Java files.
+
+Provide updated versions of all 3 files for review before writing.
+
+
+—---------
+PROMPT 29:
+Add comprehensive client-side validation to match backend constraints and provide clear error messages BEFORE sending requests.
+
+CURRENT ISSUE:
+Frontend allows submitting invalid data that backend rejects. Keep existing maxlength attributes; add JS validation as an extra safety layer. User sees generic error instead of helpful field-level message.
+
+BACKEND VALIDATION RULES (must match):
+- Title: required, max 200 characters
+- Description: optional, max 1000 characters
+- Due Date: required, must be in future
+- Priority: required
+- Status: optional (defaults to TODO)
+
+FRONTEND VALIDATION REQUIRED:
+
+1. Create Task Form:
+   - Validate title length <= 200 chars (not just maxlength attribute)
+   - Validate description length <= 1000 chars if provided
+   - Validate due date is in future
+   - Show specific error messages for each violation
+   - Prevent form submission if any validation fails
+
+2. Edit Task Form:
+   - Same title/description length validation
+   - Due date validation only if changed (existing logic)
+   - Show specific error messages
+
+3. Validation Triggers:
+   - On blur for each field (show errors immediately)
+   - On form submit (comprehensive check before API call)
+   - Clear errors on input change
+
+4. Error Messages:
+   - Title: "Title cannot exceed 200 characters (currently: {count})"
+   - Description: "Description cannot exceed 1000 characters (currently: {count})"
+   - Due Date: "Due date must be in the future"
+   - Title required: "Title is required"
+
+5. Implementation:
+   - Update validateForm() function to check lengths
+   - Add character counter display under title/description inputs (optional but helpful)
+   - Prevent form submission if validation fails
+   - Trim whitespace before length check
+
+VALIDATION BEHAVIOR:
+- Check actual string length, not just rely on maxlength attribute
+- Trim values before validation
+- Show field-level errors immediately
+- Don't send request if frontend validation fails
+
+UPDATE ONLY:
+- index.html (add character counter spans if implementing)
+- app.js (enhance validateForm function, add blur handlers)
+
+Do not modify backend files.
+Keep the existing maxlength="200" and maxlength="1000" attributes in HTML.
+Provide updated app.js with enhanced validation. Show only the relevant validation functions for review before writing.
+—-------------
+
+PROMPT 30:
+fix one bug first.In validateField(), the description branch uses v.length but v is not defined. Please change the description branch to define:
+const v = el.value.trim();
+before checking v.length.
+After that fix, write app.js and index.html only.
+
+PROMPT 31:
+Fix table display for long valid titles.
+
+Issue:
+The frontend correctly allows titles up to 200 characters, but a 200-character title makes the task table stretch horizontally and look broken.
+
+Requirements:
+1. In app.js, add a class to the title table cell:
+   <td class="col-title" title="...">...</td>
+
+2. In styles.css, add styling for .col-title:
+   - max-width: 260px
+   - white-space: nowrap
+   - overflow: hidden
+   - text-overflow: ellipsis
+
+3. Keep full title visible on hover using the title attribute.
+
+4. Do not change backend validation.
+5. Do not change create/edit validation.
+
+Update only:
+- app.js
+- styles.css
+
+Show the relevant changes for review before writing.
+
+
+PROMPT 31:
+Add a Task Analytics endpoint to provide aggregate statistics about tasks.
+ENDPOINT SPECIFICATION:
+GET /tasks/analytics
+
+Response structure:
+{
+  "totalTasks": 10,
+  "byStatus": {
+    "TODO": 4,
+    "IN_PROGRESS": 3,
+    "DONE": 3
+  },
+  "byPriority": {
+    "LOW": 2,
+    "MEDIUM": 5,
+    "HIGH": 3
+  },
+  "overdueTasks": 2,
+  "upcomingTasksNext7Days": 4
+}
+
+BUSINESS LOGIC:
+
+- totalTasks: count of all tasks
+- byStatus: count tasks grouped by each Status enum value
+- byPriority: count tasks grouped by each Priority enum value
+- overdueTasks: tasks where dueDate < now AND status != DONE
+- upcomingTasksNext7Days: tasks where dueDate is between now and now+7days AND status != DONE
+
+CRITICAL: byStatus and byPriority must include EVERY enum value with 0 count if no tasks match. Do not omit keys with zero counts. Initialize all enum values with 0, then merge in actual counts.
+
+IMPLEMENTATION REQUIREMENTS:
+
+1. Create DTO: TaskAnalyticsResponse.java
+   - Fields matching the response structure above
+   - Use Map<Status, Long> for byStatus
+   - Use Map<Priority, Long> for byPriority
+
+2. Add method to TaskService.java:
+   public TaskAnalyticsResponse getAnalytics()
+   - Use Java streams for all calculations
+   - No custom repository queries needed
+   - Initialize byStatus map with all Status enum values set to 0L
+   - Initialize byPriority map with all Priority enum values set to 0L
+   - Group tasks by status using Collectors.groupingBy and merge counts
+   - Group tasks by priority using Collectors.groupingBy and merge counts
+   - Filter for overdue using task -> dueDate before now && status not DONE
+   - Filter for upcoming using task -> dueDate between now and now+7days
+
+3. Add endpoint to TaskController.java:
+   @GetMapping("/analytics")
+   public ResponseEntity<TaskAnalyticsResponse> getAnalytics()
+
+4. Add integration test to TaskControllerIntegrationTest.java:
+   - Test analytics with empty database (all counts should be 0, all enum values present)
+   - Test analytics with mixed tasks (verify all counts are correct)
+   - Test analytics with only TODO tasks (verify other statuses show 0)
+   - Test overdue calculation
+   - Test upcoming tasks calculation
+
+CONSTRAINTS:
+- Do not modify existing endpoints
+- Use existing Task repository (findAll())
+- Follow existing code style and patterns
+- All tests must pass
+
+Show me the proposed file changes before writing.
+
+PROMPT 32:
+Looks good overall. Please make these 3 fixes before writing:
+
+1. TaskAnalyticsResponse.java
+Add the missing import:
+import com.eulerity.taskmanager.model.Status;
+
+2. TaskController.java
+Place @GetMapping("/analytics") BEFORE @GetMapping("/{id}") to avoid route ambiguity with the path variable endpoint.
+
+3. TaskService.java
+Update the upcoming tasks logic to include tasks due exactly 7 days from now.
+
+Replace:
+&& t.getDueDate().isBefore(in7Days)
+
+with:
+&& !t.getDueDate().isAfter(in7Days)
+
+This makes the "next 7 days" range inclusive and avoids hidden test failures.
+
+Keep everything else exactly the same.
+
+After these fixes, write all 4 files.
+
+PROMPT 33:
+Wouldn't it be safer to use Number-based assertions here for CI/environment consistency?
+Example:
+assertEquals(0, ((Number) body.get("totalTasks")).intValue());
+instead of:
+assertEquals(0, body.get("totalTasks"));
+since Jackson may deserialize numeric JSON values as Integer or Long depending on environment/configuration.
+
+PROMPT 34:
+The Number-based fix looks correct, but it was applied only partially.
+Please make the analytics tests fully consistent by using Number-based assertions everywhere numeric JSON values are read from Map<String, Object> responses.
+Specifically:
+- Replace remaining direct assertions like:
+  assertEquals(4, body.get("totalTasks"));
+
+  with:
+  assertEquals(4, ((Number) body.get("totalTasks")).intValue());
+
+- Replace Map<String, Integer> with Map<String, Number> in analytics tests
+- Use .intValue() for all enum count assertions
+- Apply the same fix to:
+  - totalTasks
+  - overdueTasks
+  - upcomingTasksNext7Days
+  - byStatus counts
+  - byPriority counts
+
+The goal is to make all analytics integration tests robust against Integer vs Long deserialization differences.
+
+PROMPT 35:
+The Number fix is still partial. Please update ALL remaining analytics tests.
+
+In getAnalytics_MixedTasks_ReturnsCorrectCounts:
+- Change totalTasks assertion to ((Number) body.get("totalTasks")).intValue()
+- Change byStatus and byPriority maps to Map<String, Number>
+- Use .intValue() for all count assertions
+
+In getAnalytics_OnlyTodoTasks_OtherStatusesShowZero:
+- Change Map<String, Integer> to Map<String, Number>
+- Use .intValue() for all count assertions
+
+In getAnalytics_OverdueTasks_CountsNonDoneOnly:
+- Change overdueTasks assertion to ((Number) response.getBody().get("overdueTasks")).intValue()
+
+In getAnalytics_UpcomingTasks_CountsWithin7DaysNonDoneOnly:
+- Change upcomingTasksNext7Days assertion to ((Number) response.getBody().get("upcomingTasksNext7Days")).intValue()
+
+Apply this consistently across all analytics tests.
+
+PROMPT 36:
+Add an AI-powered task breakdown endpoint that suggests subtasks for complex tasks.
+
+ENDPOINT SPECIFICATION:
+
+POST /tasks/{id}/breakdown
+
+Response structure:
+{
+  "originalTask": {
+    "id": 5,
+    "title": "Complete quarterly report",
+    "description": "Finalize Q4 metrics and submit",
+    "dueDate": "2026-05-30T17:00:00",
+    "priority": "HIGH",
+    "status": "TODO",
+    "createdAt": "2026-05-16T10:00:00",
+    "updatedAt": "2026-05-16T10:00:00"
+  },
+  "suggestedSubtasks": [
+    {
+      "title": "Gather Q4 data from all departments",
+      "description": "Collect sales, marketing, and operations data",
+      "priority": "HIGH",
+      "status": "TODO"
+    },
+    {
+      "title": "Create charts and visualizations",
+      "description": "Build graphs showing quarterly trends",
+      "priority": "MEDIUM",
+      "status": "TODO"
+    },
+    {
+      "title": "Write executive summary",
+      "description": "Summarize key findings and recommendations",
+      "priority": "HIGH",
+      "status": "TODO"
+    }
+  ],
+  "reasoning": "The task is complex and involves multiple steps..."
+}
+
+IMPLEMENTATION REQUIREMENTS:
+
+1. Create DTOs:
+
+   SubtaskSuggestion.java (in dto package):
+   - title (String)
+   - description (String)
+   - priority (Priority enum)
+   - status (Status enum, default TODO)
+
+   TaskBreakdownResponse.java (in dto package):
+   - originalTask (TaskResponse)
+   - suggestedSubtasks (List<SubtaskSuggestion>)
+   - reasoning (String, optional)
+
+2. Update AIProvider interface (in service package):
+   Add method: TaskBreakdownResponse breakdownTask(TaskResponse task)
+
+3. Implement in GeminiAIService.java:
+   - Create prompt asking Gemini to break down the task into 3-5 subtasks
+   - Parse JSON response into TaskBreakdownResponse
+   - Handle errors gracefully
+   - Use existing HTTP client pattern
+
+4. Update AIService.java:
+   Add method: TaskBreakdownResponse breakdownTask(TaskResponse task)
+   - Do NOT fetch task inside AIService (avoid coupling with TaskService)
+   - Simply call aiProvider.breakdownTask(task)
+   - Return response
+
+5. Add endpoint to AIController.java:
+   IMPORTANT: AIController already has @RequestMapping("/tasks"), so use:
+
+   @PostMapping("/{id}/breakdown")
+   public ResponseEntity<TaskBreakdownResponse> breakdownTask(@PathVariable Long id)
+
+   This produces endpoint:
+   POST /tasks/{id}/breakdown
+AIController must inject TaskService in addition to AIService.
+Inside the endpoint:
+TaskResponse task = taskService.getTaskById(id);
+return ResponseEntity.ok(aiService.breakdownTask(task));
+
+
+
+ARCHITECTURE NOTES:
+- TaskService owns task lookup/persistence
+- AIService owns AI behavior only
+- AIController coordinates between services
+- This avoids circular dependency between TaskService and AIService
+- Easier to test and maintain
+
+6. Add tests (create new test file or add to existing AI controller tests):
+   - Test successful breakdown (mock both TaskService and AIService)
+   - Test task not found (404) - mock taskService to throw TaskNotFoundException
+   - Test AI service error (500) - mock aiService to throw exception
+
+PROMPT DESIGN FOR GEMINI:
+
+The prompt sent to Gemini should be:
+"Break down this task into 3-5 actionable subtasks: [task details]
+Return JSON with suggestedSubtasks array containing: title, description, priority, status.
+Also include reasoning explaining why you chose these subtasks."
+
+CONSTRAINTS:
+- Use existing AIProvider/GeminiAIService architecture
+- Add endpoint to existing AIController
+- Do not modify existing /tasks/suggest endpoint
+- Do NOT create coupling between AIService and TaskService
+- Follow existing error handling patterns
+- Mock both services in controller tests
+- All tests must pass
+
+Show me the proposed file changes before writing.
+
+PROMPT 37:
+please fix these issues before writing:
+
+1. GeminiAIService.parseBreakdownResponse()
+The method references `root.at(...)` but `root` is never defined.
+Add:
+JsonNode root = objectMapper.readTree(responseBody);
+
+before accessing root.at(...).
+
+2. DTO consistency
+SubtaskSuggestion and TaskBreakdownResponse should follow the existing DTO style used elsewhere in the project:
+- remove final fields
+- add no-args constructor
+- keep full constructor
+- add getters/setters
+
+3. Default TODO behavior
+In SubtaskSuggestion, if status is null, default it to Status.TODO.
+
+After these fixes, write all files.
+
+PROMPT 38:
+Please make these small cleanup improvements
+
+1. In GeminiAIService.parseBreakdownResponse():
+Replace:
+
+for (JsonNode node : parsed.get("suggestedSubtasks"))
+
+with safer validation:
+
+JsonNode subtasksNode = parsed.get("suggestedSubtasks");
+if (subtasksNode == null || !subtasksNode.isArray()) {
+    throw new RuntimeException("AI response missing suggestedSubtasks array");
+}
+
+for (JsonNode node : subtasksNode) {
+
+This prevents malformed AI responses from causing unclear NullPointerExceptions.
+
+
+PROMPT 39:
+The endpoint POST /tasks/{id}/breakdown works and returns a valid Gemini breakdown response.
+Only AIControllerTest is failing during ApplicationContext loading.
+Please fix only AIControllerTest.java.
+
+Use this robust approach:
+- Replace @WebMvcTest with @SpringBootTest
+- Add @AutoConfigureMockMvc
+- Add @TestPropertySource(properties = "gemini.api.key=test-key")
+- Keep MockMvc
+- Mock AIService and TaskService
+- Keep the same three test cases:
+  1. breakdownTask_Returns200WithBreakdown
+  2. breakdownTask_TaskNotFound_Returns404
+  3. breakdownTask_AIServiceError_Returns500
+
+Important:
+- Do not modify production code.
+- Do not modify GeminiAIService.
+- Do not call real Gemini from tests.
+- Show corrected AIControllerTest.java before writing.
+
+PROMPT 40:
+Add a minimal frontend UI for the AI task breakdown endpoint.
+GOAL:
+To Allow reviewers to trigger POST /tasks/{id}/breakdown directly from the UI and view the AI-generated subtasks without using Postman.
+REQUIREMENTS:
+
+1. Add "AI Breakdown" button to each task row:
+   - Add to the action-btns div in renderTasks() function in app.js
+   - Place alongside existing Edit and Delete buttons
+   - Example:
+     <button class="btn btn-sm btn-primary" onclick="breakdownTask(${t.id})">AI Breakdown</button>
+2. Add results container to index.html:
+   - Add after the tasks table:
+     <div id="breakdown-result"></div>
+
+3. Add async function breakdownTask(id) in app.js:
+
+   Behavior:
+   - Clear any previous breakdown results
+   - Show loading message: "Generating AI breakdown..." in breakdown-result div
+   - Call POST /tasks/{id}/breakdown
+   - Parse JSON response
+   - Display in breakdown-result div:
+
+     Format:
+     <h3>AI Task Breakdown</h3>
+     <p><strong>Original Task:</strong> [task title]</p>
+     <p><strong>AI Reasoning:</strong> [reasoning]</p>
+     <h4>Suggested Subtasks:</h4>
+     <ul>
+       <li><strong>[subtask title]</strong> - [priority]<br>[description]</li>
+       ...
+     </ul>
+
+4. Error handling:
+   - If request fails, display in breakdown-result div:
+     "Failed to generate AI breakdown: [error message]"
+
+5. Styling (optional):
+   - Add minimal CSS for breakdown-result in styles.css
+   - Keep it simple - just basic formatting
+   - No modal, no fancy animations
+
+6. Constraints:
+   - Do not modify backend code
+   - Do not modify existing task list functionality
+   - Keep UI minimal and functional
+
+7. Update only:
+   - app.js (add breakdownTask function, update renderTasks)
+   - index.html (add breakdown-result div)
+   - styles.css (optional minimal styling)
+Use the existing escape/sanitize helper if app.js already has one, so AI-generated text is not inserted raw into HTML.
+Show the proposed frontend changes before writing.
+New →
+The task table correctly truncates long descriptions, but reviewers should still be able to see the full description.
+Update app.js in renderTasks() so the description cell includes a title attribute with the full escaped description.
+Example:
+<td class="col-desc" title="${attr(t.description || '')}">
+  ${esc(t.description || '')}
+</td>
+
+Do not remove the ellipsis styling.
+Do not change backend code.
+Update only app.js.
+
+
+PROMPT 41:
+Add a simple Task Details modal so reviewers can view full task information without relying only on tooltip.
+
+Requirements:
+1. In app.js, store the currently loaded tasks in a global variable:
+   let currentTasks = [];
+   In loadTasks(), after fetching tasks, assign:
+   currentTasks = tasks;
+2. In renderTasks(), add a "View" button inside the existing action-btns div alongside Edit/Delete/AI Breakdown.
+
+Use the existing data-action event delegation pattern already used by Edit/Delete/AI Breakdown buttons:
+
+<button class="btn btn-sm btn-secondary" data-action="view" data-id="${t.id}">View</button>
+
+3. In the existing task-body click handler, add:
+   if (action === 'view') viewTask(id);
+
+4. Add viewTask(id) function in app.js:
+   - Find task from currentTasks by id
+   - Populate view-modal-content
+   - Show:
+     - Title
+     - Full description
+     - Due date
+     - Priority badge
+     - Status badge
+     - Created at
+     - Updated at
+   - Use esc()/attr() helpers for displayed text
+   - Use fmtDate() for dates
+   - Call document.getElementById('view-modal').showModal()
+
+5. Add closeViewModal() function in app.js:
+   document.getElementById('view-modal').close();
+
+6. In index.html, add this dialog after the edit-modal dialog and before the confirm delete modal:
+
+<dialog id="view-modal">
+    <div class="modal-header">
+        <h2>Task Details</h2>
+        <button class="modal-close" onclick="closeViewModal()" aria-label="Close">&times;</button>
+    </div>
+    <div class="modal-body" id="view-modal-content"></div>
+</dialog>
+
+7. In DOMContentLoaded, add backdrop click close support:
+document.getElementById('view-modal').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeViewModal();
+});
+8. Keep existing table truncation/ellipsis unchanged.
+9. Do not make a new backend call.
+10. Do not modify backend code.
+11. Update only index.html and app.js. styles.css only if needed.
+12. Show proposed changes before writing.
+
+PROMPT 42:
+
+Add simple API quick links in the application header so reviewers can easily access raw JSON endpoints.
+
+Current header structure:
+<header>
+    <div class="header-inner">
+        <h1>&#10003; Task Manager</h1>
+    </div>
+</header>
+
+Requirements:
+1. In index.html, update the header to add API links on the right side:
+<header>
+    <div class="header-inner">
+        <h1>&#10003; Task Manager</h1>
+        <div class="api-links">
+            <span>API:</span>
+            <a href="/tasks" target="_blank">All Tasks</a>
+            <a href="/tasks/analytics" target="_blank">Analytics</a>
+        </div>
+    </div>
+</header>
+2. Update .header-inner in styles.css to use flexbox:
+   - Display flex
+   - Justify content space-between
+   - Align items center
+   This keeps the title on the left, API links on the right.
+3. Add .api-links styling in styles.css:
+   - Small font size (14px or similar)
+   - Lightweight appearance
+   - Slightly transparent white text
+   - Links should underline on hover
+   Example:
+   .api-links {
+       font-size: 14px;
+       color: rgba(255,255,255,0.9);
+   }
+   .api-links a {
+       color: #fff;
+       text-decoration: none;
+       margin-left: 12px;
+   }
+   .api-links a:hover {
+       text-decoration: underline;
+   }
+
+4. Links open in new tab (target="_blank").
+5. Keep styling minimal and subtle.
+6. Do not modify backend code.
+7. Update only:
+   - index.html (update header structure)
+   - styles.css (add flexbox to header-inner, add .api-links styles)
+8. Show proposed changes before writing.

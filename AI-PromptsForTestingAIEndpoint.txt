@@ -1,0 +1,6 @@
+1. Prepare slides for the quarterly business review meeting next Wednesday at 2pm
+2. Review pull requests from the team and provide feedback by end of week
+3. Respond to customer escalation about billing issue - urgent
+4. Write blog post about our new AI features for the engineering blog by next Monday
+5. Set up monitoring alerts for production database performance before the weekend
+6. Schedule interviews with 3 senior engineer candidates next week
