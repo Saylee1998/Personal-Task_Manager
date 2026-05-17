@@ -28,6 +28,7 @@ Spring Boot task management application with CRUD operations, filtering/search, 
 ### AI Features
 - AI task suggestion from natural language
 - AI task breakdown into subtasks
+- Graceful fallback AI provider when Gemini API key is not configured
 
 ### Analytics
 - Task counts by status and priority
@@ -58,8 +59,12 @@ $env:GEMINI_API_KEY="your-api-key"
 ---
 
 ### application.properties
+application.properties file already has: 
+```properties
+gemini.api.key=${GEMINI_API_KEY:}
+```
 
-The project expects the Gemini API key through an environment variable:
+So the project runs without api key but below are actual steps to add the real key:
 
 ```properties
 gemini.api.key=${GEMINI_API_KEY}
