@@ -55,7 +55,15 @@ Windows PowerShell:
 ```powershell
 $env:GEMINI_API_KEY="your-api-key"
 ```
+---
 
+### application.properties
+
+The project expects the Gemini API key through an environment variable:
+
+```properties
+gemini.api.key=${GEMINI_API_KEY}
+```
 ---
 
 ### 2. Run the Project
