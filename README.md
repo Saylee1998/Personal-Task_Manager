@@ -231,7 +231,7 @@ Recommended complex tasks:
 
 ## AI Assistance
 
-AI tools were used (Claude code CLI) for implementation support, debugging assistance, and documentation refinement.
+AI tools were used (Claude code CLI) Sonnet 4.6 for implementation support, debugging assistance, and documentation refinement.
 
 ---
 

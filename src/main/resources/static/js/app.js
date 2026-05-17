@@ -9,7 +9,8 @@ let pendingDeleteTitle = null;
 let successDismissTimer  = null;
 let successDismissTarget = null;
 
-let currentTasks   = [];
+let currentTasks          = [];
+let currentLoadController = null;
 let currentFilters = { status: '', priority: '', sortBy: 'createdAt', sortOrder: 'desc', search: '' };
 
 // ── Init ───────────────────────────────────────────────
@@ -139,6 +140,9 @@ function validateForm(prefix, originalDueDate = null) {
 
 // ── Task List ──────────────────────────────────────────
 async function loadTasks() {
+    if (currentLoadController) currentLoadController.abort();
+    currentLoadController = new AbortController();
+    const signal = currentLoadController.signal;
     try {
         const params = new URLSearchParams();
         if (currentFilters.status)    params.set('status',    currentFilters.status);
@@ -148,11 +152,12 @@ async function loadTasks() {
         if (currentFilters.search)    params.set('search',    currentFilters.search);
 
         const query = params.toString() ? '?' + params.toString() : '';
-        const res   = await fetch('/tasks' + query);
+        const res   = await fetch('/tasks' + query, { signal });
         const tasks = await res.json();
         currentTasks = tasks;
         renderTasks(tasks);
     } catch (err) {
+        if (err.name === 'AbortError') return;
         showAlert('task-msg', 'err', 'Failed to load tasks: ' + err.message);
     }
 }
@@ -200,12 +205,12 @@ function renderTasks(tasks) {
     tasks.forEach(t => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td>${t.id}</td>
+            <td>${esc(String(t.id))}</td>
             <td>${esc(t.title)}</td>
             <td class="col-desc" title="${attr(t.description || '')}">${esc(t.description || '')}</td>
             <td>${fmtDate(t.dueDate)}</td>
-            <td><span class="badge badge-${t.priority}">${t.priority}</span></td>
-            <td><span class="task-status status-${t.status}">${t.status.replace('_', ' ')}</span></td>
+            <td><span class="badge badge-${attr(t.priority)}">${esc(t.priority)}</span></td>
+            <td><span class="task-status status-${attr(t.status)}">${esc(t.status.replace('_', ' '))}</span></td>
             <td class="col-created">${fmtDate(t.createdAt)}</td>
             <td class="col-actions">
                 <div class="action-btns">
@@ -394,7 +399,7 @@ function closeViewModal() {
 // ── AI Breakdown ───────────────────────────────────────
 async function breakdownTask(id) {
     const container = document.getElementById('breakdown-result');
-    container.innerHTML = '<p style="color:#64748b;font-size:0.875rem;">Generating AI breakdown…</p>';
+    container.innerHTML = '<p class="breakdown-loading">Generating AI breakdown…</p>';
     container.style.display = 'block';
 
     try {

@@ -9,12 +9,6 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
-/**
- * Inbound DTO for creating or updating a task.
- * Validation here enforces API boundary rules; the Task entity
- * intentionally carries no @Future constraint so overdue tasks
- * remain updatable.
- */
 public class TaskRequest {
 
     @NotBlank(message = "Title is required")

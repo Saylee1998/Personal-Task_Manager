@@ -21,6 +21,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -178,7 +180,7 @@ public class GeminiAIService implements AIProvider {
                     : Status.TODO;
             String reasoning   = taskJson.has("reasoning") ? taskJson.get("reasoning").asText() : "";
 
-            LocalDateTime dueDate = LocalDateTime.parse(dueDateStr);
+            LocalDateTime dueDate = parseFlexibleDateTime(dueDateStr);
 
             TaskRequest suggestedTask = new TaskRequest(title, description, dueDate, priority, status);
             return new AITaskSuggestionResponse(suggestedTask, reasoning);
@@ -216,6 +218,18 @@ public class GeminiAIService implements AIProvider {
 
         } catch (Exception ex) {
             throw new RuntimeException("Failed to parse AI breakdown response: " + ex.getMessage(), ex);
+        }
+    }
+
+    private static LocalDateTime parseFlexibleDateTime(String dateStr) {
+        try {
+            return LocalDateTime.parse(dateStr);
+        } catch (DateTimeParseException e) {
+            try {
+                return OffsetDateTime.parse(dateStr).toLocalDateTime();
+            } catch (DateTimeParseException e2) {
+                throw new RuntimeException("Cannot parse date from AI response: " + dateStr, e);
+            }
         }
     }
 

@@ -152,7 +152,7 @@ public class TaskService {
         String trimmed = search.trim();
         try {
             long id = Long.parseLong(trimmed);
-            return task.getId() != null && task.getId() == id;
+            return task.getId() != null && task.getId().equals(id);
         } catch (NumberFormatException e) {
             return task.getTitle() != null &&
                    task.getTitle().toLowerCase().contains(trimmed.toLowerCase());

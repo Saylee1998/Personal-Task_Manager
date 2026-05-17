@@ -2,6 +2,7 @@ package com.eulerity.taskmanager.dto;
 
 import com.eulerity.taskmanager.model.Priority;
 import com.eulerity.taskmanager.model.Status;
+import java.util.Collections;
 import java.util.Map;
 
 public class TaskAnalyticsResponse {
@@ -16,8 +17,8 @@ public class TaskAnalyticsResponse {
                                   Map<Priority, Long> byPriority,
                                   long overdueTasks, long upcomingTasksNext7Days) {
         this.totalTasks             = totalTasks;
-        this.byStatus               = byStatus;
-        this.byPriority             = byPriority;
+        this.byStatus               = Collections.unmodifiableMap(byStatus);
+        this.byPriority             = Collections.unmodifiableMap(byPriority);
         this.overdueTasks           = overdueTasks;
         this.upcomingTasksNext7Days = upcomingTasksNext7Days;
     }

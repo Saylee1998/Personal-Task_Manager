@@ -272,6 +272,18 @@ class TaskControllerIntegrationTest {
     }
 
     @Test
+    void getAnalytics_TaskDueExactly7DaysFromNow_CountsAsUpcoming() {
+        LocalDateTime exactly7Days = LocalDateTime.now().plusDays(7).withNano(0);
+        restTemplate.postForEntity("/tasks",
+            new TaskRequest("Boundary Task", null, exactly7Days, Priority.MEDIUM, Status.TODO), Map.class);
+
+        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics", Map.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, ((Number) response.getBody().get("upcomingTasksNext7Days")).intValue());
+    }
+
+    @Test
     void getAnalytics_UpcomingTasks_CountsWithin7DaysNonDoneOnly() {
         LocalDateTime in3Days  = LocalDateTime.now().plusDays(3).withNano(0);
         LocalDateTime in10Days = LocalDateTime.now().plusDays(10).withNano(0);

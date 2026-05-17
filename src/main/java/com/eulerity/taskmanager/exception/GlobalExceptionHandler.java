@@ -1,5 +1,7 @@
 package com.eulerity.taskmanager.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -20,6 +22,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @ExceptionHandler(TaskNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleTaskNotFound(TaskNotFoundException ex) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), null);
@@ -27,10 +31,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Map<String, Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String requiredType = ex.getRequiredType() != null ? ex.getRequiredType().getSimpleName() : "unknown";
         String message = String.format("Invalid value '%s' for parameter '%s'. Expected type: %s",
                 ex.getValue(),
                 ex.getName(),
-                ex.getRequiredType().getSimpleName());
+                requiredType);
         return buildError(HttpStatus.BAD_REQUEST, message, null);
     }
 
@@ -54,6 +59,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {
+        log.error("Unhandled exception", ex);
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", null);
     }
 

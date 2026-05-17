@@ -2,9 +2,13 @@ package com.eulerity.taskmanager.service;
 
 import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
 import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
+import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
 import com.eulerity.taskmanager.dto.TaskRequest;
+import com.eulerity.taskmanager.dto.TaskResponse;
 import com.eulerity.taskmanager.model.Priority;
 import com.eulerity.taskmanager.model.Status;
+
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,5 +48,19 @@ class AIServiceTest {
         assertEquals("Testing ensures reliability", result.getReasoning());
         assertEquals("Write API Tests", result.getSuggestedTask().getTitle());
         verify(aiProvider).suggestTask(description);
+    }
+
+    @Test
+    void breakdownTask_DelegatesToProviderWithCorrectTask() {
+        LocalDateTime due = LocalDateTime.now().plusDays(30);
+        TaskResponse task = new TaskResponse(1L, "Complex Task", null, due, Priority.HIGH, Status.TODO, due, due);
+        TaskBreakdownResponse expected = new TaskBreakdownResponse(task, List.of(), "reasoning");
+
+        when(aiProvider.breakdownTask(task)).thenReturn(expected);
+
+        TaskBreakdownResponse result = aiService.breakdownTask(task);
+
+        assertSame(expected, result);
+        verify(aiProvider).breakdownTask(task);
     }
 }
