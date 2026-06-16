@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow — Analytics</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────── -->
+<header>
+    <div class="header-inner">
+        <div class="brand">
+            <div class="brand-icon">T</div>
+            <span class="brand-name">TaskFlow</span>
+        </div>
+        <nav class="header-nav">
+            <a th:href="@{/}" class="nav-page-link">Dashboard</a>
+            <a th:href="@{/tasks}" target="_blank">REST: Tasks</a>
+            <a th:href="@{/tasks/analytics/json}" target="_blank">REST: Analytics JSON</a>
+        </nav>
+    </div>
+</header>
+
+<!-- ── Main ────────────────────────────────────────────── -->
+<main class="container">
+
+    <div class="page-title">
+        <h1>Analytics Dashboard</h1>
+        <p class="page-subtitle">Visual summary of task metrics and distribution.</p>
+    </div>
+
+    <!-- ── Summary Metrics Grid ─────────────────────────── -->
+    <div class="analytics-grid">
+
+        <div class="metric-card metric-total">
+            <div class="metric-icon">&#128203;</div>
+            <div class="metric-body">
+                <span class="metric-value" th:text="${totalTasks}">0</span>
+                <span class="metric-label">Total Tasks</span>
+            </div>
+        </div>
+
+        <div class="metric-card metric-done">
+            <div class="metric-icon">&#10003;</div>
+            <div class="metric-body">
+                <span class="metric-value" th:text="${doneTasks}">0</span>
+                <span class="metric-label">Completed</span>
+            </div>
+        </div>
+
+        <div class="metric-card metric-progress-card">
+            <div class="metric-icon">&#9889;</div>
+            <div class="metric-body">
+                <span class="metric-value" th:text="${inProgressTasks}">0</span>
+                <span class="metric-label">In Progress</span>
+            </div>
+        </div>
+
+        <div class="metric-card metric-overdue">
+            <div class="metric-icon">&#9888;</div>
+            <div class="metric-body">
+                <span class="metric-value" th:text="${overdueTasks}">0</span>
+                <span class="metric-label">Overdue</span>
+            </div>
+        </div>
+
+        <div class="metric-card"
+             style="border-left-color: #8b5cf6;"
+             th:classappend="${activeHighCount >= maxActiveHigh} ? ' metric-high-limit' : ''">
+            <div class="metric-icon">&#128293;</div>
+            <div class="metric-body">
+                <div class="metric-high-value">
+                    <span class="metric-value" th:text="${activeHighCount}">0</span>
+                    <span class="metric-of" th:text="'/ ' + ${maxActiveHigh}">/ 3</span>
+                </div>
+                <span class="metric-label">Active HIGH Tasks</span>
+                <div class="metric-bar-track">
+                    <div class="metric-bar-fill"
+                         th:style="'width:' + ${activeHighPct} + '%'"
+                         th:classappend="${activeHighCount >= maxActiveHigh} ? ' bar-danger' : ''">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="metric-card" style="border-left-color: #06b6d4;">
+            <div class="metric-icon">&#128197;</div>
+            <div class="metric-body">
+                <span class="metric-value" th:text="${upcomingTasks}">0</span>
+                <span class="metric-label">Due in 7 Days</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ── Charts Row ────────────────────────────────────── -->
+    <div class="charts-row">
+
+        <!-- Tasks by Priority -->
+        <div class="analytics-chart-card">
+            <h2 class="card-title">Tasks by Priority</h2>
+            <span class="card-subtitle">Distribution across LOW, MEDIUM, and HIGH priorities</span>
+
+            <div class="chart-row">
+                <span class="chart-label">LOW</span>
+                <div class="chart-track">
+                    <div class="chart-bar bar-low" th:style="'width:' + ${lowPct} + '%'">
+                        <span class="chart-bar-label" th:if="${lowPct >= 10}"
+                              th:text="${lowPct} + '%'"></span>
+                    </div>
+                </div>
+                <div class="chart-stat">
+                    <div class="chart-stat-count" th:text="${lowCount}">0</div>
+                    <div class="chart-stat-pct" th:text="${lowPct} + '%'">0%</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <span class="chart-label">MEDIUM</span>
+                <div class="chart-track">
+                    <div class="chart-bar bar-medium" th:style="'width:' + ${mediumPct} + '%'">
+                        <span class="chart-bar-label" th:if="${mediumPct >= 10}"
+                              th:text="${mediumPct} + '%'"></span>
+                    </div>
+                </div>
+                <div class="chart-stat">
+                    <div class="chart-stat-count" th:text="${mediumCount}">0</div>
+                    <div class="chart-stat-pct" th:text="${mediumPct} + '%'">0%</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <span class="chart-label">HIGH</span>
+                <div class="chart-track">
+                    <div class="chart-bar bar-high" th:style="'width:' + ${highPriPct} + '%'">
+                        <span class="chart-bar-label" th:if="${highPriPct >= 10}"
+                              th:text="${highPriPct} + '%'"></span>
+                    </div>
+                </div>
+                <div class="chart-stat">
+                    <div class="chart-stat-count" th:text="${highCount}">0</div>
+                    <div class="chart-stat-pct" th:text="${highPriPct} + '%'">0%</div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px; padding-top:14px; border-top:1px solid var(--border);">
+                <span class="analytics-summary-label">Total: <span th:text="${totalTasks}">0</span> tasks</span>
+            </div>
+        </div>
+
+        <!-- Tasks by Status -->
+        <div class="analytics-chart-card">
+            <h2 class="card-title">Tasks by Status</h2>
+            <span class="card-subtitle">Distribution across TODO, IN PROGRESS, and DONE statuses</span>
+
+            <div class="chart-row">
+                <span class="chart-label">TODO</span>
+                <div class="chart-track">
+                    <div class="chart-bar bar-todo" th:style="'width:' + ${todoPct} + '%'">
+                        <span class="chart-bar-label" th:if="${todoPct >= 10}"
+                              th:text="${todoPct} + '%'"></span>
+                    </div>
+                </div>
+                <div class="chart-stat">
+                    <div class="chart-stat-count" th:text="${todoCount}">0</div>
+                    <div class="chart-stat-pct" th:text="${todoPct} + '%'">0%</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <span class="chart-label">IN PROGRESS</span>
+                <div class="chart-track">
+                    <div class="chart-bar bar-progress" th:style="'width:' + ${inProgressPct} + '%'">
+                        <span class="chart-bar-label" th:if="${inProgressPct >= 10}"
+                              th:text="${inProgressPct} + '%'"></span>
+                    </div>
+                </div>
+                <div class="chart-stat">
+                    <div class="chart-stat-count" th:text="${inProgressCount}">0</div>
+                    <div class="chart-stat-pct" th:text="${inProgressPct} + '%'">0%</div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <span class="chart-label">DONE</span>
+                <div class="chart-track">
+                    <div class="chart-bar bar-done" th:style="'width:' + ${donePct} + '%'">
+                        <span class="chart-bar-label" th:if="${donePct >= 10}"
+                              th:text="${donePct} + '%'"></span>
+                    </div>
+                </div>
+                <div class="chart-stat">
+                    <div class="chart-stat-count" th:text="${doneCount}">0</div>
+                    <div class="chart-stat-pct" th:text="${donePct} + '%'">0%</div>
+                </div>
+            </div>
+
+            <div style="margin-top:20px; padding-top:14px; border-top:1px solid var(--border);">
+                <span class="analytics-summary-label">Total: <span th:text="${totalTasks}">0</span> tasks</span>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

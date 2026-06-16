@@ -199,7 +199,7 @@ class TaskControllerIntegrationTest {
 
     @Test
     void getAnalytics_EmptyDatabase_ReturnsZeroCountsWithAllEnumKeys() {
-        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics", Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics/json", Map.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Map<String, Object> body = response.getBody();
@@ -228,7 +228,7 @@ class TaskControllerIntegrationTest {
         restTemplate.postForEntity("/tasks", new TaskRequest("T3", null, futureDate, Priority.MEDIUM, Status.DONE),        Map.class);
         restTemplate.postForEntity("/tasks", new TaskRequest("T4", null, futureDate, Priority.LOW,    Status.TODO),        Map.class);
 
-        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics", Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics/json", Map.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Map<String, Object> body = response.getBody();
@@ -250,7 +250,7 @@ class TaskControllerIntegrationTest {
         restTemplate.postForEntity("/tasks", new TaskRequest("T1", null, futureDate, Priority.MEDIUM, Status.TODO), Map.class);
         restTemplate.postForEntity("/tasks", new TaskRequest("T2", null, futureDate, Priority.MEDIUM, Status.TODO), Map.class);
 
-        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics", Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics/json", Map.class);
 
         Map<String, Number> byStatus = (Map<String, Number>) response.getBody().get("byStatus");
         assertEquals(2, byStatus.get("TODO").intValue());
@@ -265,7 +265,7 @@ class TaskControllerIntegrationTest {
         taskRepository.save(new Task("Overdue In Progress", null, pastDate, Priority.MEDIUM, Status.IN_PROGRESS));
         taskRepository.save(new Task("Overdue Done",        null, pastDate, Priority.LOW,    Status.DONE));
 
-        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics", Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics/json", Map.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(2, ((Number) response.getBody().get("overdueTasks")).intValue());
@@ -277,7 +277,7 @@ class TaskControllerIntegrationTest {
         restTemplate.postForEntity("/tasks",
             new TaskRequest("Boundary Task", null, exactly7Days, Priority.MEDIUM, Status.TODO), Map.class);
 
-        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics", Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics/json", Map.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, ((Number) response.getBody().get("upcomingTasksNext7Days")).intValue());
@@ -292,7 +292,7 @@ class TaskControllerIntegrationTest {
         restTemplate.postForEntity("/tasks", new TaskRequest("Far Future",    null, in10Days, Priority.MEDIUM, Status.TODO), Map.class);
         restTemplate.postForEntity("/tasks", new TaskRequest("Done Upcoming", null, in3Days,  Priority.MEDIUM, Status.DONE), Map.class);
 
-        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics", Map.class);
+        ResponseEntity<Map> response = restTemplate.getForEntity("/tasks/analytics/json", Map.class);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, ((Number) response.getBody().get("upcomingTasksNext7Days")).intValue());

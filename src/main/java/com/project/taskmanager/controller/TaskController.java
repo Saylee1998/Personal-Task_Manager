@@ -47,7 +47,7 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getAllTasks(status, priority, sortBy, sortOrder, search));
     }
 
-    @GetMapping("/analytics")
+    @GetMapping("/analytics/json")
     public ResponseEntity<TaskAnalyticsResponse> getAnalytics() {
         return ResponseEntity.ok(taskService.getAnalytics());
     }
