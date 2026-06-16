@@ -2,7 +2,7 @@ Prompt 1:
 I'm building a Java 17 REST API for a personal task manager as part of a backend engineering assessment. I need you to help me build this thoughtfully and iteratively phase by phase.
 Already Set Up:
 - Spring Boot 3.5.14 with Maven
-- Package: com.eulerity.taskmanager
+- Package: com.project.taskmanager
 - Dependencies: Spring Web, Spring Data JPA, H2, Validation
 - H2 database configured with create-drop mode
 - Server running on port 8080
@@ -10,7 +10,7 @@ Already Set Up:
 
 Architecture I thought of: Controller Layer → Service Layer → Repository Layer → Database (H2)
 My planned package structure:
-In com.eulerity.taskmanager/
+In com.project.taskmanager/
 TaskmanagerApplication.java (main file)
 In package controller/ - TaskController.java, AIController.java
 In package service/ - TaskService.java,  AIService.java
@@ -107,7 +107,7 @@ Provide complete code for:
 3. Status.java - Enum with TODO, IN_PROGRESS, DONE
 
 Include:
-- Full package declarations (com.eulerity.taskmanager.model)
+- Full package declarations (com.project.taskmanager.model)
 - All necessary imports
 - JavaDoc comments explaining the class purpose
 - Proper formatting
@@ -147,7 +147,7 @@ We do not need to implement these yet, but they will support proper handling for
 Phase 2: Repository Layer
 
 Create TaskRepository interface with these specifications:
-- Package: com.eulerity.taskmanager.repository
+- Package: com.project.taskmanager.repository
 - Extend JpaRepository<Task, Long>
 - No custom query methods needed (basic CRUD is sufficient for core requirements)
 - Include necessary imports
@@ -162,7 +162,7 @@ Ok. Phase 2 complete. Repository looks good.
 Phase 3: Now let’s first create the DTOs because I don’t want controllers to directly use the database entity. DTOs will keep request validation cleaner and separate API data from persistence logic.
 Create DTOs needed for the task CRUD API.
 
-Package: com.eulerity.taskmanager.dto
+Package: com.project.taskmanager.dto
 
 Create:
 1. TaskRequest.java
@@ -220,7 +220,7 @@ Phase 4: Exception Handling
 
 Create centralized exception handling for proper API error responses.
 
-Package: com.eulerity.taskmanager.exception
+Package: com.project.taskmanager.exception
 
 Create:
 1. TaskNotFoundException.java - custom exception for missing tasks
@@ -249,7 +249,7 @@ Phase 5: TaskService
 
 Create the service layer with business logic for CRUD operations.
 
-Package: com.eulerity.taskmanager.service
+Package: com.project.taskmanager.service
 
 Create TaskService class with these specifications:
 
@@ -303,7 +303,7 @@ Now Phase 6: TaskController
 
 Create a REST controller with CRUD endpoints.
 
-Package: com.eulerity.taskmanager.controller
+Package: com.project.taskmanager.controller
 
 Create TaskController with these endpoints:
 - POST /tasks → createTask
@@ -1190,7 +1190,7 @@ Looks good overall. Please make these 3 fixes before writing:
 
 1. TaskAnalyticsResponse.java
 Add the missing import:
-import com.eulerity.taskmanager.model.Status;
+import com.project.taskmanager.model.Status;
 
 2. TaskController.java
 Place @GetMapping("/analytics") BEFORE @GetMapping("/{id}") to avoid route ambiguity with the path variable endpoint.

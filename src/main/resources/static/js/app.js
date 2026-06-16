@@ -3,7 +3,7 @@
 // ── State ──────────────────────────────────────────────
 let lastAiSuggestion   = null;
 let editingTaskId      = null;
-let originalEditDate   = null; // "YYYY-MM-DDTHH:MM" — skip future-check if date unchanged
+let originalEditDate   = null;
 let pendingDeleteId    = null;
 let pendingDeleteTitle = null;
 let successDismissTimer  = null;
@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     bindInputClear('edit-title', 'edit-description', 'edit-dueDate');
     document.getElementById('ai-desc').addEventListener('input', () => clearFieldError('ai-desc'));
 
-    // Blur: validate immediately when leaving a field
     document.getElementById('title')?.addEventListener('blur', () => validateField('', 'title', null));
     document.getElementById('description')?.addEventListener('blur', () => validateField('', 'description', null));
     document.getElementById('dueDate')?.addEventListener('blur', () => validateField('', 'dueDate', null));
@@ -29,12 +28,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('edit-description')?.addEventListener('blur', () => validateField('edit', 'description', null));
     document.getElementById('edit-dueDate')?.addEventListener('blur', () => validateField('edit', 'dueDate', originalEditDate));
 
-    // Enter key in search input triggers search
     document.getElementById('filter-search').addEventListener('keydown', e => {
         if (e.key === 'Enter') applySearch();
     });
 
-    // Close modals when clicking the backdrop
+    document.getElementById('create-modal').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closeCreateModal();
+    });
     document.getElementById('edit-modal').addEventListener('click', e => {
         if (e.target === e.currentTarget) closeModal();
     });
@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === e.currentTarget) closeViewModal();
     });
 
-    // Edit / Delete via event delegation on the table body
     document.getElementById('task-body').addEventListener('click', e => {
         const btn = e.target.closest('button[data-action]');
         if (!btn) return;
@@ -129,7 +128,6 @@ function validateField(prefix, field, originalDueDate) {
     return valid;
 }
 
-// originalDueDate: null = always require future; string = skip check if date unchanged (edit)
 function validateForm(prefix, originalDueDate = null) {
     let valid = true;
     if (!validateField(prefix, 'title',       originalDueDate)) valid = false;
@@ -197,8 +195,11 @@ function renderTasks(tasks) {
     const tbody = document.getElementById('task-body');
     tbody.innerHTML = '';
 
+    const label = document.getElementById('task-count-label');
+    if (label) label.textContent = tasks.length === 1 ? '1 task' : tasks.length + ' tasks';
+
     if (!tasks.length) {
-        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No tasks yet. Create one below.</td></tr>';
+        tbody.innerHTML = '<tr class="empty-row"><td colspan="8">No tasks match your filters. Try adjusting or clearing them.</td></tr>';
         return;
     }
 
@@ -211,18 +212,18 @@ function renderTasks(tasks) {
             <td>${fmtDate(t.dueDate)}</td>
             <td><span class="badge badge-${attr(t.priority)}">${esc(t.priority)}</span></td>
             <td><span class="task-status status-${attr(t.status)}">${esc(t.status.replace('_', ' '))}</span></td>
-            <td class="col-created">${fmtDate(t.createdAt)}</td>
+            <td class="col-created">${fmtDate(t.createdAt, true)}</td>
             <td class="col-actions">
                 <div class="action-btns">
-                    <button class="btn btn-sm btn-secondary"
+                    <button class="btn btn-sm btn-ghost"
                             data-action="view" data-id="${t.id}">View</button>
                     <button class="btn btn-sm btn-edit"
                             data-action="edit" data-id="${t.id}">Edit</button>
                     <button class="btn btn-sm btn-delete"
                             data-action="delete" data-id="${t.id}"
                             data-title="${attr(t.title)}">Delete</button>
-                    <button class="btn btn-sm btn-primary"
-                            data-action="breakdown" data-id="${t.id}">AI Breakdown</button>
+                    <button class="btn btn-sm btn-ai"
+                            data-action="breakdown" data-id="${t.id}">AI</button>
                 </div>
             </td>`;
         tbody.appendChild(tr);
@@ -230,9 +231,19 @@ function renderTasks(tasks) {
 }
 
 // ── Create Task ────────────────────────────────────────
+function openCreateModal() {
+    clearAlert('create-msg');
+    clearFormErrors('');
+    document.getElementById('create-form').reset();
+    document.getElementById('create-modal').showModal();
+}
+
+function closeCreateModal() {
+    document.getElementById('create-modal').close();
+}
+
 async function createTask(event) {
     event.preventDefault();
-    clearAlert('task-msg');
     clearAlert('create-msg');
     clearFormErrors('');
 
@@ -254,9 +265,8 @@ async function createTask(event) {
         });
         const data = await res.json();
         if (res.ok) {
-            showAlert('create-msg', 'ok', 'Task created (ID: ' + data.id + ')');
-            document.getElementById('create-form').reset();
-            clearFormErrors('');
+            closeCreateModal();
+            showAlert('task-msg', 'ok', 'Task created successfully (ID: ' + data.id + ')');
             loadTasks();
         } else {
             showAlert('create-msg', 'err', formatApiError(data));
@@ -264,12 +274,6 @@ async function createTask(event) {
     } catch (err) {
         showAlert('create-msg', 'err', 'Request failed: ' + err.message);
     }
-}
-
-function resetCreateForm() {
-    document.getElementById('create-form').reset();
-    clearAlert('create-msg');
-    clearFormErrors('');
 }
 
 // ── Edit Task ──────────────────────────────────────────
@@ -379,15 +383,15 @@ function viewTask(id) {
     if (!task) return;
 
     document.getElementById('view-modal-content').innerHTML =
-        '<p><strong>Title:</strong> '       + esc(task.title)              + '</p>' +
-        '<p><strong>Description:</strong> ' + esc(task.description || '—') + '</p>' +
-        '<p><strong>Due Date:</strong> '    + esc(fmtDate(task.dueDate))   + '</p>' +
-        '<p><strong>Priority:</strong> <span class="badge badge-' + attr(task.priority) + '">'
+        '<p><strong>Title</strong>'       + esc(task.title)              + '</p>' +
+        '<p><strong>Description</strong>' + esc(task.description || '—') + '</p>' +
+        '<p><strong>Due Date</strong>'    + esc(fmtDate(task.dueDate))   + '</p>' +
+        '<p><strong>Priority</strong><span class="badge badge-' + attr(task.priority) + '">'
             + esc(task.priority) + '</span></p>' +
-        '<p><strong>Status:</strong> <span class="task-status status-' + attr(task.status) + '">'
+        '<p><strong>Status</strong><span class="task-status status-' + attr(task.status) + '">'
             + esc(task.status.replace('_', ' ')) + '</span></p>' +
-        '<p><strong>Created:</strong> '  + esc(fmtDate(task.createdAt)) + '</p>' +
-        '<p><strong>Updated:</strong> '  + esc(fmtDate(task.updatedAt)) + '</p>';
+        '<p><strong>Created</strong>'  + esc(fmtDate(task.createdAt)) + '</p>' +
+        '<p><strong>Updated</strong>'  + esc(fmtDate(task.updatedAt)) + '</p>';
 
     document.getElementById('view-modal').showModal();
 }
@@ -423,7 +427,7 @@ async function breakdownTask(id) {
             '<h4>Suggested Subtasks:</h4>' +
             '<ul>' +
             subtasks.map(s =>
-                '<li><strong>' + esc(s.title) + '</strong> – ' + esc(s.priority) + '<br>' +
+                '<li><strong>' + esc(s.title) + '</strong> — ' + esc(s.priority) + '<br>' +
                 esc(s.description || '') + '</li>'
             ).join('') +
             '</ul>';
@@ -472,21 +476,19 @@ async function suggestTask() {
 function useAiSuggestion() {
     if (!lastAiSuggestion) return;
     const s = lastAiSuggestion;
+    openCreateModal();
     document.getElementById('title').value       = s.title       || '';
     document.getElementById('description').value = s.description || '';
-    // datetime-local needs "YYYY-MM-DDTHH:MM"; API returns "YYYY-MM-DDTHH:MM:SS"
     document.getElementById('dueDate').value     = s.dueDate ? s.dueDate.substring(0, 16) : '';
     document.getElementById('priority').value    = s.priority || 'MEDIUM';
     document.getElementById('status').value      = s.status   || 'TODO';
     clearAlert('create-msg');
     clearFormErrors('');
     document.getElementById('ai-result').style.display = 'none';
-    document.getElementById('create-section').scrollIntoView({ behavior: 'smooth' });
 }
 
 // ── Alert helpers ──────────────────────────────────────
 function showAlert(id, type, text) {
-    // Cancel existing timer if it targets the same element
     if (successDismissTimer && successDismissTarget === id) {
         clearTimeout(successDismissTimer);
         successDismissTimer  = null;
@@ -499,7 +501,6 @@ function showAlert(id, type, text) {
          type === 'err'  ? ' alert-err'  :
          type === 'info' ? ' alert-info' : '');
     el.textContent = text;
-    // Only success messages auto-dismiss; errors and info stay until action taken
     if (type === 'ok') {
         successDismissTarget = id;
         successDismissTimer  = setTimeout(() => {
@@ -536,28 +537,24 @@ function formatApiError(data) {
 }
 
 // ── DOM / string utils ─────────────────────────────────
-function fmtDate(iso) {
-    if (!iso) return '';
-
+function fmtDate(iso, dateOnly = false) {
+    if (!iso) return '—';
     const date = new Date(iso);
-
+    if (dateOnly) {
+        return date.toLocaleDateString([], { year: 'numeric', month: 'short', day: 'numeric' });
+    }
     return date.toLocaleString([], {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit'
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: 'numeric', minute: '2-digit'
     });
 }
 
-// Safe for element text content
 function esc(text) {
     const d = document.createElement('div');
     d.appendChild(document.createTextNode(String(text)));
     return d.innerHTML;
 }
 
-// Safe for double-quoted HTML attribute values
 function attr(text) {
     return String(text)
         .replace(/&/g, '&amp;')

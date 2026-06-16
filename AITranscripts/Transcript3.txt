@@ -204,10 +204,10 @@
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/TaskControllerIntegrationTest.java)
   ⎿  Added 35 lines
       2
-      3  import com.eulerity.taskmanager.dto.TaskRequest;
-      4  import com.eulerity.taskmanager.model.Priority;
-      5 +import com.eulerity.taskmanager.model.Status;
-      6  import com.eulerity.taskmanager.repository.TaskRepository;
+      3  import com.project.taskmanager.dto.TaskRequest;
+      4  import com.project.taskmanager.model.Priority;
+      5 +import com.project.taskmanager.model.Status;
+      6  import com.project.taskmanager.repository.TaskRepository;
       7  import org.junit.jupiter.api.BeforeEach;
       8  import org.junit.jupiter.api.Test;
      ...
@@ -419,15 +419,15 @@
   Changes: getAllTasks() delegate updated to pass 5 args; getAllTasks(...) gains String search param and a new .filter(matchesSearch) step; new matchesSearch() private helper added. Existing javadoc comments
   removed (consistent with no-comments convention established earlier).
 
-  package com.eulerity.taskmanager.service;
+  package com.project.taskmanager.service;
 
-  import com.eulerity.taskmanager.dto.TaskRequest;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.exception.TaskNotFoundException;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.model.Task;
-  import com.eulerity.taskmanager.repository.TaskRepository;
+  import com.project.taskmanager.dto.TaskRequest;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.exception.TaskNotFoundException;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.model.Task;
+  import com.project.taskmanager.repository.TaskRepository;
   import org.springframework.stereotype.Service;
 
   import java.time.LocalDateTime;
@@ -569,13 +569,13 @@
 
   Changes: getAllTasks() gains one new @RequestParam(required = false) String search param, passed through to the service.
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.TaskRequest;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.TaskRequest;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.service.TaskService;
   import jakarta.validation.Valid;
   import org.springframework.http.HttpStatus;
   import org.springframework.http.ResponseEntity;
@@ -1699,12 +1699,12 @@
 
   Changes: Two new test methods appended at the bottom; import Status already present from the previous phase.
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.TaskRequest;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.repository.TaskRepository;
+  import com.project.taskmanager.dto.TaskRequest;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.repository.TaskRepository;
   import org.junit.jupiter.api.BeforeEach;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
@@ -2045,13 +2045,13 @@
 
 ⏺ Write(Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  User rejected write to Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java
-       1 package com.eulerity.taskmanager.controller;
+       1 package com.project.taskmanager.controller;
        2
-       3 import com.eulerity.taskmanager.dto.TaskRequest;
-       4 import com.eulerity.taskmanager.dto.TaskResponse;
-       5 import com.eulerity.taskmanager.model.Priority;
-       6 import com.eulerity.taskmanager.model.Status;
-       7 import com.eulerity.taskmanager.service.TaskService;
+       3 import com.project.taskmanager.dto.TaskRequest;
+       4 import com.project.taskmanager.dto.TaskResponse;
+       5 import com.project.taskmanager.model.Priority;
+       6 import com.project.taskmanager.model.Status;
+       7 import com.project.taskmanager.service.TaskService;
        8 import jakarta.validation.Valid;
        9 import org.springframework.http.HttpStatus;
       118 +            return task.getId() != null && task.getId() == id;
@@ -4282,9 +4282,9 @@
   ---
   NEW: dto/TaskAnalyticsResponse.java
 
-  package com.eulerity.taskmanager.dto;
+  package com.project.taskmanager.dto;
 
-  import com.eulerity.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Priority;
   import java.util.Map;
 
   public class TaskAnalyticsResponse {
@@ -4316,7 +4316,7 @@
   MODIFY: TaskService.java — add getAnalytics() method (new imports + method only)
 
   New imports to add:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
   import java.util.EnumMap;
   import java.util.Map;
   import java.util.stream.Collectors;
@@ -4359,7 +4359,7 @@
   MODIFY: TaskController.java — add analytics endpoint + import
 
   New import:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
 
   New endpoint (placed before @GetMapping("/{id}")):
   @GetMapping("/analytics")
@@ -4371,7 +4371,7 @@
   MODIFY: TaskControllerIntegrationTest.java — 5 new tests
 
   New import:
-  import com.eulerity.taskmanager.model.Task;
+  import com.project.taskmanager.model.Task;
 
   New tests:
 
@@ -4478,7 +4478,7 @@
 
   1. TaskAnalyticsResponse.java
   Add the missing import:
-  import com.eulerity.taskmanager.model.Status;
+  import com.project.taskmanager.model.Status;
 
   2. TaskController.java
   Place @GetMapping("/analytics") BEFORE @GetMapping("/{id}") to avoid route ambiguity with the path variable endpoint.
@@ -4509,10 +4509,10 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java)
   ⎿  Wrote 30 lines to src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java
-       1 package com.eulerity.taskmanager.dto;
+       1 package com.project.taskmanager.dto;
        2
-       3 import com.eulerity.taskmanager.model.Priority;
-       4 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.model.Priority;
+       4 import com.project.taskmanager.model.Status;
        5 import java.util.Map;
        6
        7 public class TaskAnalyticsResponse {
@@ -4523,12 +4523,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/TaskService.java)
   ⎿  Added 37 lines
-      1  package com.eulerity.taskmanager.service;
+      1  package com.project.taskmanager.service;
       2
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.exception.TaskNotFoundException;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.exception.TaskNotFoundException;
      ...
       12
       13  import java.time.LocalDateTime;
@@ -4584,12 +4584,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  Added 6 lines
-      1  package com.eulerity.taskmanager.controller;
+      1  package com.project.taskmanager.controller;
       2
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.model.Priority;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.model.Priority;
      ...
       47          return ResponseEntity.ok(taskService.getAllTasks(status, priority, sortBy, sortOrder, search));
       48      }
@@ -4605,11 +4605,11 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/TaskControllerIntegrationTest.java)
   ⎿  Added 90 lines
-      3  import com.eulerity.taskmanager.dto.TaskRequest;
-      4  import com.eulerity.taskmanager.model.Priority;
-      5  import com.eulerity.taskmanager.model.Status;
-      6 +import com.eulerity.taskmanager.model.Task;
-      7  import com.eulerity.taskmanager.repository.TaskRepository;
+      3  import com.project.taskmanager.dto.TaskRequest;
+      4  import com.project.taskmanager.model.Priority;
+      5  import com.project.taskmanager.model.Status;
+      6 +import com.project.taskmanager.model.Task;
+      7  import com.project.taskmanager.repository.TaskRepository;
       8  import org.junit.jupiter.api.BeforeEach;
       9  import org.junit.jupiter.api.Test;
      ...
@@ -5725,12 +5725,12 @@
   
   Changes: Two new test methods appended at the bottom; import Status already present from the previous phase.
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.TaskRequest;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.repository.TaskRepository;
+  import com.project.taskmanager.dto.TaskRequest;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.repository.TaskRepository;
   import org.junit.jupiter.api.BeforeEach;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
@@ -6071,13 +6071,13 @@
 
 ⏺ Write(Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  User rejected write to Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java
-       1 package com.eulerity.taskmanager.controller;
+       1 package com.project.taskmanager.controller;
        2
-       3 import com.eulerity.taskmanager.dto.TaskRequest;
-       4 import com.eulerity.taskmanager.dto.TaskResponse;
-       5 import com.eulerity.taskmanager.model.Priority;
-       6 import com.eulerity.taskmanager.model.Status;
-       7 import com.eulerity.taskmanager.service.TaskService;
+       3 import com.project.taskmanager.dto.TaskRequest;
+       4 import com.project.taskmanager.dto.TaskResponse;
+       5 import com.project.taskmanager.model.Priority;
+       6 import com.project.taskmanager.model.Status;
+       7 import com.project.taskmanager.service.TaskService;
        8 import jakarta.validation.Valid;
        9 import org.springframework.http.HttpStatus;
       118 +            return task.getId() != null && task.getId() == id;                                                                                                                                
@@ -8308,9 +8308,9 @@
   ---
   NEW: dto/TaskAnalyticsResponse.java
 
-  package com.eulerity.taskmanager.dto;
+  package com.project.taskmanager.dto;
 
-  import com.eulerity.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Priority;
   import java.util.Map;
   
   public class TaskAnalyticsResponse {
@@ -8342,7 +8342,7 @@
   MODIFY: TaskService.java — add getAnalytics() method (new imports + method only)
   
   New imports to add:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
   import java.util.EnumMap;
   import java.util.Map;
   import java.util.stream.Collectors;
@@ -8385,7 +8385,7 @@
   MODIFY: TaskController.java — add analytics endpoint + import
 
   New import:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
   
   New endpoint (placed before @GetMapping("/{id}")):
   @GetMapping("/analytics")
@@ -8397,7 +8397,7 @@
   MODIFY: TaskControllerIntegrationTest.java — 5 new tests
 
   New import:
-  import com.eulerity.taskmanager.model.Task;
+  import com.project.taskmanager.model.Task;
 
   New tests:
 
@@ -8504,7 +8504,7 @@
                                                                                                                                                                                                                 
   1. TaskAnalyticsResponse.java                                                                                                                                                                                 
   Add the missing import:                                                                                                                                                                                       
-  import com.eulerity.taskmanager.model.Status;                                                                                                                                                                 
+  import com.project.taskmanager.model.Status;
                                                                                                                                                                                                                 
   2. TaskController.java                                                                                                                                                                                        
   Place @GetMapping("/analytics") BEFORE @GetMapping("/{id}") to avoid route ambiguity with the path variable endpoint.                                                                                         
@@ -8535,10 +8535,10 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java)
   ⎿  Wrote 30 lines to src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java
-       1 package com.eulerity.taskmanager.dto;
+       1 package com.project.taskmanager.dto;
        2 
-       3 import com.eulerity.taskmanager.model.Priority;
-       4 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.model.Priority;
+       4 import com.project.taskmanager.model.Status;
        5 import java.util.Map;  
        6 
        7 public class TaskAnalyticsResponse {
@@ -8549,12 +8549,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/TaskService.java)
   ⎿  Added 37 lines
-      1  package com.eulerity.taskmanager.service;
+      1  package com.project.taskmanager.service;
       2  
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;                                                                                                                                      
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.exception.TaskNotFoundException;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.exception.TaskNotFoundException;
      ...
       12  
       13  import java.time.LocalDateTime;
@@ -8610,12 +8610,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  Added 6 lines
-      1  package com.eulerity.taskmanager.controller;
+      1  package com.project.taskmanager.controller;
       2  
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;                                                                                                                                      
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.model.Priority;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.model.Priority;
      ...
       47          return ResponseEntity.ok(taskService.getAllTasks(status, priority, sortBy, sortOrder, search));
       48      }
@@ -8631,11 +8631,11 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/TaskControllerIntegrationTest.java)
   ⎿  Added 90 lines
-      3  import com.eulerity.taskmanager.dto.TaskRequest;
-      4  import com.eulerity.taskmanager.model.Priority;
-      5  import com.eulerity.taskmanager.model.Status;
-      6 +import com.eulerity.taskmanager.model.Task;                                                                                                                                                     
-      7  import com.eulerity.taskmanager.repository.TaskRepository;
+      3  import com.project.taskmanager.dto.TaskRequest;
+      4  import com.project.taskmanager.model.Priority;
+      5  import com.project.taskmanager.model.Status;
+      6 +import com.project.taskmanager.model.Task;
+      7  import com.project.taskmanager.repository.TaskRepository;
       8  import org.junit.jupiter.api.BeforeEach;
       9  import org.junit.jupiter.api.Test;
      ...
@@ -9112,9 +9112,9 @@
   ---
   NEW: dto/SubtaskSuggestion.java
 
-  package com.eulerity.taskmanager.dto;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
+  package com.project.taskmanager.dto;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
   
   public class SubtaskSuggestion {
   
@@ -9163,11 +9163,11 @@
 
   ---
   MODIFIED: service/AIProvider.java — add one method; doc comment preserved
-  package com.eulerity.taskmanager.service;
+  package com.project.taskmanager.service;
   
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   
   public interface AIProvider {
   
@@ -9179,11 +9179,11 @@
   ---
   MODIFIED: service/AIService.java — add facade method
 
-  package com.eulerity.taskmanager.service;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  package com.project.taskmanager.service;
+  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   import org.springframework.stereotype.Service;
   
   @Service
@@ -9208,9 +9208,9 @@
   MODIFIED: service/GeminiAIService.java — add breakdownTask() + two private helpers; existing code untouched
   
   New imports added:
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   import java.util.ArrayList;
   import java.util.List;
   
@@ -9303,13 +9303,13 @@
   ---
   MODIFIED: controller/AIController.java — inject TaskService, add breakdown endpoint
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import jakarta.validation.Valid;
   import org.springframework.http.ResponseEntity;
   import org.springframework.web.bind.annotation.PathVariable;
@@ -9344,16 +9344,16 @@
   ---
   NEW: test/.../controller/AIControllerTest.java — 3 tests; uses @WebMvcTest so only the web slice loads (no Gemini key needed)
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
   
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.exception.TaskNotFoundException;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.exception.TaskNotFoundException;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
   import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -9469,10 +9469,10 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/SubtaskSuggestion.java)
   ⎿  Wrote 33 lines to src/main/java/com/eulerity/taskmanager/dto/SubtaskSuggestion.java
-       1 package com.eulerity.taskmanager.dto;
+       1 package com.project.taskmanager.dto;
        2 
-       3 import com.eulerity.taskmanager.model.Priority;
-       4 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.model.Priority;
+       4 import com.project.taskmanager.model.Status;
        5    
        6 public class SubtaskSuggestion {
        7 
@@ -9483,7 +9483,7 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/TaskBreakdownResponse.java)
   ⎿  Wrote 29 lines to src/main/java/com/eulerity/taskmanager/dto/TaskBreakdownResponse.java
-      1 package com.eulerity.taskmanager.dto;
+      1 package com.project.taskmanager.dto;
       2 
       3 import java.util.List;
       4 
@@ -9496,11 +9496,11 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/AIProvider.java)
   ⎿  Added 4 lines, removed 11 lines
-       1  package com.eulerity.taskmanager.service;
+       1  package com.project.taskmanager.service;
        2  
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       4 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;                                                                                                                                     
-       5 +import com.eulerity.taskmanager.dto.TaskResponse;                                                                                                                                              
+       3  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       4 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       5 +import com.project.taskmanager.dto.TaskResponse;
        6  
        5 -/**                                                                                                                                                                                            
        6 - * Strategy interface for AI task suggestion providers.                                                                                                                                        
@@ -9523,10 +9523,10 @@
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/AIService.java)
   ⎿  Added 6 lines, removed 10 lines
        2  
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-       4  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;                                                                                                                                     
-       6 +import com.eulerity.taskmanager.dto.TaskResponse;                                                                                                                                              
+       3  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+       4  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6 +import com.project.taskmanager.dto.TaskResponse;
        7  import org.springframework.stereotype.Service;
        8  
        7 -/**                                                                                                                                                                                            
@@ -9557,15 +9557,15 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/GeminiAIService.java)
   ⎿  Added 91 lines, removed 12 lines
-       1  package com.eulerity.taskmanager.service;
+       1  package com.project.taskmanager.service;
        2  
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       4 +import com.eulerity.taskmanager.dto.SubtaskSuggestion;                                                                                                                                         
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;                                                                                                                                     
-       6  import com.eulerity.taskmanager.dto.TaskRequest;
-       7 +import com.eulerity.taskmanager.dto.TaskResponse;                                                                                                                                              
-       8  import com.eulerity.taskmanager.model.Priority;
-       9  import com.eulerity.taskmanager.model.Status;
+       3  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       4 +import com.project.taskmanager.dto.SubtaskSuggestion;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6  import com.project.taskmanager.dto.TaskRequest;
+       7 +import com.project.taskmanager.dto.TaskResponse;
+       8  import com.project.taskmanager.model.Priority;
+       9  import com.project.taskmanager.model.Status;
       10  import com.fasterxml.jackson.databind.JsonNode;                                                                                                                                     
      ...
       21  import java.net.http.HttpResponse;
@@ -9705,11 +9705,11 @@
 ⏺ Write(src/main/java/com/eulerity/taskmanager/controller/AIController.java)
   ⎿  Added 13 lines, removed 12 lines
        2  
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-       4  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;                                                                                                                                     
-       6  import com.eulerity.taskmanager.service.AIService;
-       7 +import com.eulerity.taskmanager.service.TaskService;                                                                                                                                           
+       3  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+       4  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6  import com.project.taskmanager.service.AIService;
+       7 +import com.project.taskmanager.service.TaskService;
        8  import jakarta.validation.Valid;
        9  import org.springframework.http.ResponseEntity;
       10 +import org.springframework.web.bind.annotation.PathVariable;                                                                                                                                   
@@ -9756,16 +9756,16 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java)
   ⎿  Wrote 84 lines to src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java
-       1 package com.eulerity.taskmanager.controller;
+       1 package com.project.taskmanager.controller;
        2 
-       3 import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-       4 import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       5 import com.eulerity.taskmanager.dto.TaskResponse;
-       6 import com.eulerity.taskmanager.exception.TaskNotFoundException;
-       7 import com.eulerity.taskmanager.model.Priority;
-       8 import com.eulerity.taskmanager.model.Status;
-       9 import com.eulerity.taskmanager.service.AIService;
-      10 import com.eulerity.taskmanager.service.TaskService;                                                                                                                                 
+       3 import com.project.taskmanager.dto.SubtaskSuggestion;
+       4 import com.project.taskmanager.dto.TaskBreakdownResponse;
+       5 import com.project.taskmanager.dto.TaskResponse;
+       6 import com.project.taskmanager.exception.TaskNotFoundException;
+       7 import com.project.taskmanager.model.Priority;
+       8 import com.project.taskmanager.model.Status;
+       9 import com.project.taskmanager.service.AIService;
+      10 import com.project.taskmanager.service.TaskService;
      … +74 lines (ctrl+o to expand)
 
 ⏺ All 7 files written. The 3 fixes applied:
@@ -9842,16 +9842,16 @@
 
 ⏺ Here is the corrected AIControllerTest.java:
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.exception.TaskNotFoundException;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.exception.TaskNotFoundException;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
   import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9946,7 +9946,7 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java)
   ⎿  Added 6 lines, removed 2 lines
-      10  import com.eulerity.taskmanager.service.TaskService;
+      10  import com.project.taskmanager.service.TaskService;
       11  import org.junit.jupiter.api.Test;
       12  import org.springframework.beans.factory.annotation.Autowired;
       13 -import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;                                                                                                                     
@@ -10415,12 +10415,12 @@
 
   Changes: Two new test methods appended at the bottom; import Status already present from the previous phase.
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.TaskRequest;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.repository.TaskRepository;
+  import com.project.taskmanager.dto.TaskRequest;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.repository.TaskRepository;
   import org.junit.jupiter.api.BeforeEach;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
@@ -10761,13 +10761,13 @@
 
 ⏺ Write(Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  User rejected write to Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java
-       1 package com.eulerity.taskmanager.controller;
+       1 package com.project.taskmanager.controller;
        2
-       3 import com.eulerity.taskmanager.dto.TaskRequest;
-       4 import com.eulerity.taskmanager.dto.TaskResponse;
-       5 import com.eulerity.taskmanager.model.Priority;
-       6 import com.eulerity.taskmanager.model.Status;
-       7 import com.eulerity.taskmanager.service.TaskService;
+       3 import com.project.taskmanager.dto.TaskRequest;
+       4 import com.project.taskmanager.dto.TaskResponse;
+       5 import com.project.taskmanager.model.Priority;
+       6 import com.project.taskmanager.model.Status;
+       7 import com.project.taskmanager.service.TaskService;
        8 import jakarta.validation.Valid;
        9 import org.springframework.http.HttpStatus;
       118 +            return task.getId() != null && task.getId() == id;
@@ -12998,9 +12998,9 @@
   ---
   NEW: dto/TaskAnalyticsResponse.java
 
-  package com.eulerity.taskmanager.dto;
+  package com.project.taskmanager.dto;
 
-  import com.eulerity.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Priority;
   import java.util.Map;
 
   public class TaskAnalyticsResponse {
@@ -13032,7 +13032,7 @@
   MODIFY: TaskService.java — add getAnalytics() method (new imports + method only)
 
   New imports to add:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
   import java.util.EnumMap;
   import java.util.Map;
   import java.util.stream.Collectors;
@@ -13075,7 +13075,7 @@
   MODIFY: TaskController.java — add analytics endpoint + import
 
   New import:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
 
   New endpoint (placed before @GetMapping("/{id}")):
   @GetMapping("/analytics")
@@ -13087,7 +13087,7 @@
   MODIFY: TaskControllerIntegrationTest.java — 5 new tests
 
   New import:
-  import com.eulerity.taskmanager.model.Task;
+  import com.project.taskmanager.model.Task;
 
   New tests:
 
@@ -13194,7 +13194,7 @@
 
   1. TaskAnalyticsResponse.java
   Add the missing import:
-  import com.eulerity.taskmanager.model.Status;
+  import com.project.taskmanager.model.Status;
 
   2. TaskController.java
   Place @GetMapping("/analytics") BEFORE @GetMapping("/{id}") to avoid route ambiguity with the path variable endpoint.
@@ -13225,10 +13225,10 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java)
   ⎿  Wrote 30 lines to src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java
-       1 package com.eulerity.taskmanager.dto;
+       1 package com.project.taskmanager.dto;
        2
-       3 import com.eulerity.taskmanager.model.Priority;
-       4 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.model.Priority;
+       4 import com.project.taskmanager.model.Status;
        5 import java.util.Map;
        6
        7 public class TaskAnalyticsResponse {
@@ -13239,12 +13239,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/TaskService.java)
   ⎿  Added 37 lines
-      1  package com.eulerity.taskmanager.service;
+      1  package com.project.taskmanager.service;
       2
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.exception.TaskNotFoundException;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.exception.TaskNotFoundException;
      ...
       12
       13  import java.time.LocalDateTime;
@@ -13300,12 +13300,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  Added 6 lines
-      1  package com.eulerity.taskmanager.controller;
+      1  package com.project.taskmanager.controller;
       2
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.model.Priority;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.model.Priority;
      ...
       47          return ResponseEntity.ok(taskService.getAllTasks(status, priority, sortBy, sortOrder, search));
       48      }
@@ -13321,11 +13321,11 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/TaskControllerIntegrationTest.java)
   ⎿  Added 90 lines
-      3  import com.eulerity.taskmanager.dto.TaskRequest;
-      4  import com.eulerity.taskmanager.model.Priority;
-      5  import com.eulerity.taskmanager.model.Status;
-      6 +import com.eulerity.taskmanager.model.Task;
-      7  import com.eulerity.taskmanager.repository.TaskRepository;
+      3  import com.project.taskmanager.dto.TaskRequest;
+      4  import com.project.taskmanager.model.Priority;
+      5  import com.project.taskmanager.model.Status;
+      6 +import com.project.taskmanager.model.Task;
+      7  import com.project.taskmanager.repository.TaskRepository;
       8  import org.junit.jupiter.api.BeforeEach;
       9  import org.junit.jupiter.api.Test;
      ...
@@ -13802,9 +13802,9 @@
   ---
   NEW: dto/SubtaskSuggestion.java
 
-  package com.eulerity.taskmanager.dto;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
+  package com.project.taskmanager.dto;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
 
   public class SubtaskSuggestion {
 
@@ -13853,11 +13853,11 @@
 
   ---
   MODIFIED: service/AIProvider.java — add one method; doc comment preserved
-  package com.eulerity.taskmanager.service;
+  package com.project.taskmanager.service;
 
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
 
   public interface AIProvider {
 
@@ -13869,11 +13869,11 @@
   ---
   MODIFIED: service/AIService.java — add facade method
 
-  package com.eulerity.taskmanager.service;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  package com.project.taskmanager.service;
+  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   import org.springframework.stereotype.Service;
 
   @Service
@@ -13898,9 +13898,9 @@
   MODIFIED: service/GeminiAIService.java — add breakdownTask() + two private helpers; existing code untouched
 
   New imports added:
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   import java.util.ArrayList;
   import java.util.List;
 
@@ -13993,13 +13993,13 @@
   ---
   MODIFIED: controller/AIController.java — inject TaskService, add breakdown endpoint
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import jakarta.validation.Valid;
   import org.springframework.http.ResponseEntity;
   import org.springframework.web.bind.annotation.PathVariable;
@@ -14034,16 +14034,16 @@
   ---
   NEW: test/.../controller/AIControllerTest.java — 3 tests; uses @WebMvcTest so only the web slice loads (no Gemini key needed)
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.exception.TaskNotFoundException;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.exception.TaskNotFoundException;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
   import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -14159,10 +14159,10 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/SubtaskSuggestion.java)
   ⎿  Wrote 33 lines to src/main/java/com/eulerity/taskmanager/dto/SubtaskSuggestion.java
-       1 package com.eulerity.taskmanager.dto;
+       1 package com.project.taskmanager.dto;
        2
-       3 import com.eulerity.taskmanager.model.Priority;
-       4 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.model.Priority;
+       4 import com.project.taskmanager.model.Status;
        5
        6 public class SubtaskSuggestion {
        7
@@ -14173,7 +14173,7 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/TaskBreakdownResponse.java)
   ⎿  Wrote 29 lines to src/main/java/com/eulerity/taskmanager/dto/TaskBreakdownResponse.java
-      1 package com.eulerity.taskmanager.dto;
+      1 package com.project.taskmanager.dto;
       2
       3 import java.util.List;
       4
@@ -14186,11 +14186,11 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/AIProvider.java)
   ⎿  Added 4 lines, removed 11 lines
-       1  package com.eulerity.taskmanager.service;
+       1  package com.project.taskmanager.service;
        2
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       4 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskResponse;
+       3  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       4 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       5 +import com.project.taskmanager.dto.TaskResponse;
        6
        5 -/**
        6 - * Strategy interface for AI task suggestion providers.
@@ -14213,10 +14213,10 @@
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/AIService.java)
   ⎿  Added 6 lines, removed 10 lines
        2
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-       4  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       6 +import com.eulerity.taskmanager.dto.TaskResponse;
+       3  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+       4  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6 +import com.project.taskmanager.dto.TaskResponse;
        7  import org.springframework.stereotype.Service;
        8
        7 -/**
@@ -14247,15 +14247,15 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/GeminiAIService.java)
   ⎿  Added 91 lines, removed 12 lines
-       1  package com.eulerity.taskmanager.service;
+       1  package com.project.taskmanager.service;
        2
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       4 +import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       6  import com.eulerity.taskmanager.dto.TaskRequest;
-       7 +import com.eulerity.taskmanager.dto.TaskResponse;
-       8  import com.eulerity.taskmanager.model.Priority;
-       9  import com.eulerity.taskmanager.model.Status;
+       3  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       4 +import com.project.taskmanager.dto.SubtaskSuggestion;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6  import com.project.taskmanager.dto.TaskRequest;
+       7 +import com.project.taskmanager.dto.TaskResponse;
+       8  import com.project.taskmanager.model.Priority;
+       9  import com.project.taskmanager.model.Status;
       10  import com.fasterxml.jackson.databind.JsonNode;
      ...
       21  import java.net.http.HttpResponse;
@@ -14395,11 +14395,11 @@
 ⏺ Write(src/main/java/com/eulerity/taskmanager/controller/AIController.java)
   ⎿  Added 13 lines, removed 12 lines
        2
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-       4  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       6  import com.eulerity.taskmanager.service.AIService;
-       7 +import com.eulerity.taskmanager.service.TaskService;
+       3  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+       4  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6  import com.project.taskmanager.service.AIService;
+       7 +import com.project.taskmanager.service.TaskService;
        8  import jakarta.validation.Valid;
        9  import org.springframework.http.ResponseEntity;
       10 +import org.springframework.web.bind.annotation.PathVariable;
@@ -14446,16 +14446,16 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java)
   ⎿  Wrote 84 lines to src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java
-       1 package com.eulerity.taskmanager.controller;
+       1 package com.project.taskmanager.controller;
        2
-       3 import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-       4 import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       5 import com.eulerity.taskmanager.dto.TaskResponse;
-       6 import com.eulerity.taskmanager.exception.TaskNotFoundException;
-       7 import com.eulerity.taskmanager.model.Priority;
-       8 import com.eulerity.taskmanager.model.Status;
-       9 import com.eulerity.taskmanager.service.AIService;
-      10 import com.eulerity.taskmanager.service.TaskService;
+       3 import com.project.taskmanager.dto.SubtaskSuggestion;
+       4 import com.project.taskmanager.dto.TaskBreakdownResponse;
+       5 import com.project.taskmanager.dto.TaskResponse;
+       6 import com.project.taskmanager.exception.TaskNotFoundException;
+       7 import com.project.taskmanager.model.Priority;
+       8 import com.project.taskmanager.model.Status;
+       9 import com.project.taskmanager.service.AIService;
+      10 import com.project.taskmanager.service.TaskService;
      … +74 lines (ctrl+o to expand)
 
 ⏺ All 7 files written. The 3 fixes applied:
@@ -14532,16 +14532,16 @@
 
 ⏺ Here is the corrected AIControllerTest.java:
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.exception.TaskNotFoundException;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.exception.TaskNotFoundException;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
   import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14636,7 +14636,7 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java)
   ⎿  Added 6 lines, removed 2 lines
-      10  import com.eulerity.taskmanager.service.TaskService;
+      10  import com.project.taskmanager.service.TaskService;
       11  import org.junit.jupiter.api.Test;
       12  import org.springframework.beans.factory.annotation.Autowired;
       13 -import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15143,12 +15143,12 @@
   
   Changes: Two new test methods appended at the bottom; import Status already present from the previous phase.
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.TaskRequest;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.repository.TaskRepository;
+  import com.project.taskmanager.dto.TaskRequest;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.repository.TaskRepository;
   import org.junit.jupiter.api.BeforeEach;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
@@ -15489,13 +15489,13 @@
 
 ⏺ Write(Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  User rejected write to Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java
-       1 package com.eulerity.taskmanager.controller;
+       1 package com.project.taskmanager.controller;
        2
-       3 import com.eulerity.taskmanager.dto.TaskRequest;
-       4 import com.eulerity.taskmanager.dto.TaskResponse;
-       5 import com.eulerity.taskmanager.model.Priority;
-       6 import com.eulerity.taskmanager.model.Status;
-       7 import com.eulerity.taskmanager.service.TaskService;
+       3 import com.project.taskmanager.dto.TaskRequest;
+       4 import com.project.taskmanager.dto.TaskResponse;
+       5 import com.project.taskmanager.model.Priority;
+       6 import com.project.taskmanager.model.Status;
+       7 import com.project.taskmanager.service.TaskService;
        8 import jakarta.validation.Valid;
        9 import org.springframework.http.HttpStatus;
       118 +            return task.getId() != null && task.getId() == id;                                                                                                                                
@@ -17726,9 +17726,9 @@
   ---
   NEW: dto/TaskAnalyticsResponse.java
 
-  package com.eulerity.taskmanager.dto;
+  package com.project.taskmanager.dto;
 
-  import com.eulerity.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Priority;
   import java.util.Map;
   
   public class TaskAnalyticsResponse {
@@ -17760,7 +17760,7 @@
   MODIFY: TaskService.java — add getAnalytics() method (new imports + method only)
   
   New imports to add:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
   import java.util.EnumMap;
   import java.util.Map;
   import java.util.stream.Collectors;
@@ -17803,7 +17803,7 @@
   MODIFY: TaskController.java — add analytics endpoint + import
 
   New import:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
   
   New endpoint (placed before @GetMapping("/{id}")):
   @GetMapping("/analytics")
@@ -17815,7 +17815,7 @@
   MODIFY: TaskControllerIntegrationTest.java — 5 new tests
 
   New import:
-  import com.eulerity.taskmanager.model.Task;
+  import com.project.taskmanager.model.Task;
 
   New tests:
 
@@ -17922,7 +17922,7 @@
                                                                                                                                                                                                                 
   1. TaskAnalyticsResponse.java                                                                                                                                                                                 
   Add the missing import:                                                                                                                                                                                       
-  import com.eulerity.taskmanager.model.Status;                                                                                                                                                                 
+  import com.project.taskmanager.model.Status;
                                                                                                                                                                                                                 
   2. TaskController.java                                                                                                                                                                                        
   Place @GetMapping("/analytics") BEFORE @GetMapping("/{id}") to avoid route ambiguity with the path variable endpoint.                                                                                         
@@ -17953,10 +17953,10 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java)
   ⎿  Wrote 30 lines to src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java
-       1 package com.eulerity.taskmanager.dto;
+       1 package com.project.taskmanager.dto;
        2 
-       3 import com.eulerity.taskmanager.model.Priority;
-       4 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.model.Priority;
+       4 import com.project.taskmanager.model.Status;
        5 import java.util.Map;  
        6 
        7 public class TaskAnalyticsResponse {
@@ -17967,12 +17967,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/TaskService.java)
   ⎿  Added 37 lines
-      1  package com.eulerity.taskmanager.service;
+      1  package com.project.taskmanager.service;
       2  
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;                                                                                                                                      
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.exception.TaskNotFoundException;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.exception.TaskNotFoundException;
      ...
       12  
       13  import java.time.LocalDateTime;
@@ -18028,12 +18028,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  Added 6 lines
-      1  package com.eulerity.taskmanager.controller;
+      1  package com.project.taskmanager.controller;
       2  
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;                                                                                                                                      
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.model.Priority;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.model.Priority;
      ...
       47          return ResponseEntity.ok(taskService.getAllTasks(status, priority, sortBy, sortOrder, search));
       48      }
@@ -18049,11 +18049,11 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/TaskControllerIntegrationTest.java)
   ⎿  Added 90 lines
-      3  import com.eulerity.taskmanager.dto.TaskRequest;
-      4  import com.eulerity.taskmanager.model.Priority;
-      5  import com.eulerity.taskmanager.model.Status;
-      6 +import com.eulerity.taskmanager.model.Task;                                                                                                                                                     
-      7  import com.eulerity.taskmanager.repository.TaskRepository;
+      3  import com.project.taskmanager.dto.TaskRequest;
+      4  import com.project.taskmanager.model.Priority;
+      5  import com.project.taskmanager.model.Status;
+      6 +import com.project.taskmanager.model.Task;
+      7  import com.project.taskmanager.repository.TaskRepository;
       8  import org.junit.jupiter.api.BeforeEach;
       9  import org.junit.jupiter.api.Test;
      ...
@@ -18530,9 +18530,9 @@
   ---
   NEW: dto/SubtaskSuggestion.java
 
-  package com.eulerity.taskmanager.dto;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
+  package com.project.taskmanager.dto;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
   
   public class SubtaskSuggestion {
   
@@ -18581,11 +18581,11 @@
 
   ---
   MODIFIED: service/AIProvider.java — add one method; doc comment preserved
-  package com.eulerity.taskmanager.service;
+  package com.project.taskmanager.service;
   
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   
   public interface AIProvider {
   
@@ -18597,11 +18597,11 @@
   ---
   MODIFIED: service/AIService.java — add facade method
 
-  package com.eulerity.taskmanager.service;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  package com.project.taskmanager.service;
+  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   import org.springframework.stereotype.Service;
   
   @Service
@@ -18626,9 +18626,9 @@
   MODIFIED: service/GeminiAIService.java — add breakdownTask() + two private helpers; existing code untouched
   
   New imports added:
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   import java.util.ArrayList;
   import java.util.List;
   
@@ -18721,13 +18721,13 @@
   ---
   MODIFIED: controller/AIController.java — inject TaskService, add breakdown endpoint
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import jakarta.validation.Valid;
   import org.springframework.http.ResponseEntity;
   import org.springframework.web.bind.annotation.PathVariable;
@@ -18762,16 +18762,16 @@
   ---
   NEW: test/.../controller/AIControllerTest.java — 3 tests; uses @WebMvcTest so only the web slice loads (no Gemini key needed)
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
   
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.exception.TaskNotFoundException;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.exception.TaskNotFoundException;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
   import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18887,10 +18887,10 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/SubtaskSuggestion.java)
   ⎿  Wrote 33 lines to src/main/java/com/eulerity/taskmanager/dto/SubtaskSuggestion.java
-       1 package com.eulerity.taskmanager.dto;
+       1 package com.project.taskmanager.dto;
        2 
-       3 import com.eulerity.taskmanager.model.Priority;
-       4 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.model.Priority;
+       4 import com.project.taskmanager.model.Status;
        5    
        6 public class SubtaskSuggestion {
        7 
@@ -18901,7 +18901,7 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/TaskBreakdownResponse.java)
   ⎿  Wrote 29 lines to src/main/java/com/eulerity/taskmanager/dto/TaskBreakdownResponse.java
-      1 package com.eulerity.taskmanager.dto;
+      1 package com.project.taskmanager.dto;
       2 
       3 import java.util.List;
       4 
@@ -18914,11 +18914,11 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/AIProvider.java)
   ⎿  Added 4 lines, removed 11 lines
-       1  package com.eulerity.taskmanager.service;
+       1  package com.project.taskmanager.service;
        2  
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       4 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;                                                                                                                                     
-       5 +import com.eulerity.taskmanager.dto.TaskResponse;                                                                                                                                              
+       3  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       4 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       5 +import com.project.taskmanager.dto.TaskResponse;
        6  
        5 -/**                                                                                                                                                                                            
        6 - * Strategy interface for AI task suggestion providers.                                                                                                                                        
@@ -18941,10 +18941,10 @@
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/AIService.java)
   ⎿  Added 6 lines, removed 10 lines
        2  
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-       4  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;                                                                                                                                     
-       6 +import com.eulerity.taskmanager.dto.TaskResponse;                                                                                                                                              
+       3  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+       4  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6 +import com.project.taskmanager.dto.TaskResponse;
        7  import org.springframework.stereotype.Service;
        8  
        7 -/**                                                                                                                                                                                            
@@ -18975,15 +18975,15 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/GeminiAIService.java)
   ⎿  Added 91 lines, removed 12 lines
-       1  package com.eulerity.taskmanager.service;
+       1  package com.project.taskmanager.service;
        2  
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       4 +import com.eulerity.taskmanager.dto.SubtaskSuggestion;                                                                                                                                         
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;                                                                                                                                     
-       6  import com.eulerity.taskmanager.dto.TaskRequest;
-       7 +import com.eulerity.taskmanager.dto.TaskResponse;                                                                                                                                              
-       8  import com.eulerity.taskmanager.model.Priority;
-       9  import com.eulerity.taskmanager.model.Status;
+       3  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       4 +import com.project.taskmanager.dto.SubtaskSuggestion;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6  import com.project.taskmanager.dto.TaskRequest;
+       7 +import com.project.taskmanager.dto.TaskResponse;
+       8  import com.project.taskmanager.model.Priority;
+       9  import com.project.taskmanager.model.Status;
       10  import com.fasterxml.jackson.databind.JsonNode;                                                                                                                                     
      ...
       21  import java.net.http.HttpResponse;
@@ -19123,11 +19123,11 @@
 ⏺ Write(src/main/java/com/eulerity/taskmanager/controller/AIController.java)
   ⎿  Added 13 lines, removed 12 lines
        2  
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-       4  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;                                                                                                                                     
-       6  import com.eulerity.taskmanager.service.AIService;
-       7 +import com.eulerity.taskmanager.service.TaskService;                                                                                                                                           
+       3  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+       4  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6  import com.project.taskmanager.service.AIService;
+       7 +import com.project.taskmanager.service.TaskService;
        8  import jakarta.validation.Valid;
        9  import org.springframework.http.ResponseEntity;
       10 +import org.springframework.web.bind.annotation.PathVariable;                                                                                                                                   
@@ -19174,16 +19174,16 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java)
   ⎿  Wrote 84 lines to src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java
-       1 package com.eulerity.taskmanager.controller;
+       1 package com.project.taskmanager.controller;
        2 
-       3 import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-       4 import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       5 import com.eulerity.taskmanager.dto.TaskResponse;
-       6 import com.eulerity.taskmanager.exception.TaskNotFoundException;
-       7 import com.eulerity.taskmanager.model.Priority;
-       8 import com.eulerity.taskmanager.model.Status;
-       9 import com.eulerity.taskmanager.service.AIService;
-      10 import com.eulerity.taskmanager.service.TaskService;                                                                                                                                 
+       3 import com.project.taskmanager.dto.SubtaskSuggestion;
+       4 import com.project.taskmanager.dto.TaskBreakdownResponse;
+       5 import com.project.taskmanager.dto.TaskResponse;
+       6 import com.project.taskmanager.exception.TaskNotFoundException;
+       7 import com.project.taskmanager.model.Priority;
+       8 import com.project.taskmanager.model.Status;
+       9 import com.project.taskmanager.service.AIService;
+      10 import com.project.taskmanager.service.TaskService;
      … +74 lines (ctrl+o to expand)
 
 ⏺ All 7 files written. The 3 fixes applied:
@@ -19260,16 +19260,16 @@
 
 ⏺ Here is the corrected AIControllerTest.java:
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.exception.TaskNotFoundException;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.exception.TaskNotFoundException;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
   import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19364,7 +19364,7 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java)
   ⎿  Added 6 lines, removed 2 lines
-      10  import com.eulerity.taskmanager.service.TaskService;
+      10  import com.project.taskmanager.service.TaskService;
       11  import org.junit.jupiter.api.Test;
       12  import org.springframework.beans.factory.annotation.Autowired;
       13 -import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;                                                                                                                     
@@ -20294,13 +20294,13 @@
 
 ⏺ Write(Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  User rejected write to Downloads/taskmanager/src/main/java/com/eulerity/taskmanager/controller/TaskController.java
-       1 package com.eulerity.taskmanager.controller;
+       1 package com.project.taskmanager.controller;
        2
-       3 import com.eulerity.taskmanager.dto.TaskRequest;
-       4 import com.eulerity.taskmanager.dto.TaskResponse;
-       5 import com.eulerity.taskmanager.model.Priority;
-       6 import com.eulerity.taskmanager.model.Status;
-       7 import com.eulerity.taskmanager.service.TaskService;
+       3 import com.project.taskmanager.dto.TaskRequest;
+       4 import com.project.taskmanager.dto.TaskResponse;
+       5 import com.project.taskmanager.model.Priority;
+       6 import com.project.taskmanager.model.Status;
+       7 import com.project.taskmanager.service.TaskService;
        8 import jakarta.validation.Valid;
        9 import org.springframework.http.HttpStatus;
       118 +            return task.getId() != null && task.getId() == id;
@@ -22531,9 +22531,9 @@
   ---
   NEW: dto/TaskAnalyticsResponse.java
 
-  package com.eulerity.taskmanager.dto;
+  package com.project.taskmanager.dto;
 
-  import com.eulerity.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Priority;
   import java.util.Map;
 
   public class TaskAnalyticsResponse {
@@ -22565,7 +22565,7 @@
   MODIFY: TaskService.java — add getAnalytics() method (new imports + method only)
 
   New imports to add:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
   import java.util.EnumMap;
   import java.util.Map;
   import java.util.stream.Collectors;
@@ -22608,7 +22608,7 @@
   MODIFY: TaskController.java — add analytics endpoint + import
 
   New import:
-  import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
+  import com.project.taskmanager.dto.TaskAnalyticsResponse;
 
   New endpoint (placed before @GetMapping("/{id}")):
   @GetMapping("/analytics")
@@ -22620,7 +22620,7 @@
   MODIFY: TaskControllerIntegrationTest.java — 5 new tests
 
   New import:
-  import com.eulerity.taskmanager.model.Task;
+  import com.project.taskmanager.model.Task;
 
   New tests:
 
@@ -22727,7 +22727,7 @@
 
   1. TaskAnalyticsResponse.java
   Add the missing import:
-  import com.eulerity.taskmanager.model.Status;
+  import com.project.taskmanager.model.Status;
 
   2. TaskController.java
   Place @GetMapping("/analytics") BEFORE @GetMapping("/{id}") to avoid route ambiguity with the path variable endpoint.
@@ -22758,10 +22758,10 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java)
   ⎿  Wrote 30 lines to src/main/java/com/eulerity/taskmanager/dto/TaskAnalyticsResponse.java
-       1 package com.eulerity.taskmanager.dto;
+       1 package com.project.taskmanager.dto;
        2
-       3 import com.eulerity.taskmanager.model.Priority;
-       4 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.model.Priority;
+       4 import com.project.taskmanager.model.Status;
        5 import java.util.Map;
        6
        7 public class TaskAnalyticsResponse {
@@ -22772,12 +22772,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/TaskService.java)
   ⎿  Added 37 lines
-      1  package com.eulerity.taskmanager.service;
+      1  package com.project.taskmanager.service;
       2
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.exception.TaskNotFoundException;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.exception.TaskNotFoundException;
      ...
       12
       13  import java.time.LocalDateTime;
@@ -22833,12 +22833,12 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/controller/TaskController.java)
   ⎿  Added 6 lines
-      1  package com.eulerity.taskmanager.controller;
+      1  package com.project.taskmanager.controller;
       2
-      3 +import com.eulerity.taskmanager.dto.TaskAnalyticsResponse;
-      4  import com.eulerity.taskmanager.dto.TaskRequest;
-      5  import com.eulerity.taskmanager.dto.TaskResponse;
-      6  import com.eulerity.taskmanager.model.Priority;
+      3 +import com.project.taskmanager.dto.TaskAnalyticsResponse;
+      4  import com.project.taskmanager.dto.TaskRequest;
+      5  import com.project.taskmanager.dto.TaskResponse;
+      6  import com.project.taskmanager.model.Priority;
      ...
       47          return ResponseEntity.ok(taskService.getAllTasks(status, priority, sortBy, sortOrder, search));
       48      }
@@ -22854,11 +22854,11 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/TaskControllerIntegrationTest.java)
   ⎿  Added 90 lines
-      3  import com.eulerity.taskmanager.dto.TaskRequest;
-      4  import com.eulerity.taskmanager.model.Priority;
-      5  import com.eulerity.taskmanager.model.Status;
-      6 +import com.eulerity.taskmanager.model.Task;
-      7  import com.eulerity.taskmanager.repository.TaskRepository;
+      3  import com.project.taskmanager.dto.TaskRequest;
+      4  import com.project.taskmanager.model.Priority;
+      5  import com.project.taskmanager.model.Status;
+      6 +import com.project.taskmanager.model.Task;
+      7  import com.project.taskmanager.repository.TaskRepository;
       8  import org.junit.jupiter.api.BeforeEach;
       9  import org.junit.jupiter.api.Test;
      ...
@@ -23335,9 +23335,9 @@
   ---
   NEW: dto/SubtaskSuggestion.java
 
-  package com.eulerity.taskmanager.dto;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
+  package com.project.taskmanager.dto;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
 
   public class SubtaskSuggestion {
 
@@ -23386,11 +23386,11 @@
 
   ---
   MODIFIED: service/AIProvider.java — add one method; doc comment preserved
-  package com.eulerity.taskmanager.service;
+  package com.project.taskmanager.service;
 
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
 
   public interface AIProvider {
 
@@ -23402,11 +23402,11 @@
   ---
   MODIFIED: service/AIService.java — add facade method
 
-  package com.eulerity.taskmanager.service;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  package com.project.taskmanager.service;
+  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   import org.springframework.stereotype.Service;
 
   @Service
@@ -23431,9 +23431,9 @@
   MODIFIED: service/GeminiAIService.java — add breakdownTask() + two private helpers; existing code untouched
 
   New imports added:
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
   import java.util.ArrayList;
   import java.util.List;
 
@@ -23526,13 +23526,13 @@
   ---
   MODIFIED: controller/AIController.java — inject TaskService, add breakdown endpoint
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import jakarta.validation.Valid;
   import org.springframework.http.ResponseEntity;
   import org.springframework.web.bind.annotation.PathVariable;
@@ -23567,16 +23567,16 @@
   ---
   NEW: test/.../controller/AIControllerTest.java — 3 tests; uses @WebMvcTest so only the web slice loads (no Gemini key needed)
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.exception.TaskNotFoundException;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.exception.TaskNotFoundException;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
   import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23692,10 +23692,10 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/SubtaskSuggestion.java)
   ⎿  Wrote 33 lines to src/main/java/com/eulerity/taskmanager/dto/SubtaskSuggestion.java
-       1 package com.eulerity.taskmanager.dto;
+       1 package com.project.taskmanager.dto;
        2
-       3 import com.eulerity.taskmanager.model.Priority;
-       4 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.model.Priority;
+       4 import com.project.taskmanager.model.Status;
        5
        6 public class SubtaskSuggestion {
        7
@@ -23706,7 +23706,7 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/dto/TaskBreakdownResponse.java)
   ⎿  Wrote 29 lines to src/main/java/com/eulerity/taskmanager/dto/TaskBreakdownResponse.java
-      1 package com.eulerity.taskmanager.dto;
+      1 package com.project.taskmanager.dto;
       2
       3 import java.util.List;
       4
@@ -23719,11 +23719,11 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/AIProvider.java)
   ⎿  Added 4 lines, removed 11 lines
-       1  package com.eulerity.taskmanager.service;
+       1  package com.project.taskmanager.service;
        2
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       4 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskResponse;
+       3  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       4 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       5 +import com.project.taskmanager.dto.TaskResponse;
        6
        5 -/**
        6 - * Strategy interface for AI task suggestion providers.
@@ -23746,10 +23746,10 @@
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/AIService.java)
   ⎿  Added 6 lines, removed 10 lines
        2
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-       4  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       6 +import com.eulerity.taskmanager.dto.TaskResponse;
+       3  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+       4  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6 +import com.project.taskmanager.dto.TaskResponse;
        7  import org.springframework.stereotype.Service;
        8
        7 -/**
@@ -23780,15 +23780,15 @@
 
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/GeminiAIService.java)
   ⎿  Added 91 lines, removed 12 lines
-       1  package com.eulerity.taskmanager.service;
+       1  package com.project.taskmanager.service;
        2
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       4 +import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       6  import com.eulerity.taskmanager.dto.TaskRequest;
-       7 +import com.eulerity.taskmanager.dto.TaskResponse;
-       8  import com.eulerity.taskmanager.model.Priority;
-       9  import com.eulerity.taskmanager.model.Status;
+       3  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       4 +import com.project.taskmanager.dto.SubtaskSuggestion;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6  import com.project.taskmanager.dto.TaskRequest;
+       7 +import com.project.taskmanager.dto.TaskResponse;
+       8  import com.project.taskmanager.model.Priority;
+       9  import com.project.taskmanager.model.Status;
       10  import com.fasterxml.jackson.databind.JsonNode;
      ...
       21  import java.net.http.HttpResponse;
@@ -23928,11 +23928,11 @@
 ⏺ Write(src/main/java/com/eulerity/taskmanager/controller/AIController.java)
   ⎿  Added 13 lines, removed 12 lines
        2
-       3  import com.eulerity.taskmanager.dto.AITaskSuggestionRequest;
-       4  import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       5 +import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       6  import com.eulerity.taskmanager.service.AIService;
-       7 +import com.eulerity.taskmanager.service.TaskService;
+       3  import com.project.taskmanager.dto.AITaskSuggestionRequest;
+       4  import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       5 +import com.project.taskmanager.dto.TaskBreakdownResponse;
+       6  import com.project.taskmanager.service.AIService;
+       7 +import com.project.taskmanager.service.TaskService;
        8  import jakarta.validation.Valid;
        9  import org.springframework.http.ResponseEntity;
       10 +import org.springframework.web.bind.annotation.PathVariable;
@@ -23979,16 +23979,16 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java)
   ⎿  Wrote 84 lines to src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java
-       1 package com.eulerity.taskmanager.controller;
+       1 package com.project.taskmanager.controller;
        2
-       3 import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-       4 import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       5 import com.eulerity.taskmanager.dto.TaskResponse;
-       6 import com.eulerity.taskmanager.exception.TaskNotFoundException;
-       7 import com.eulerity.taskmanager.model.Priority;
-       8 import com.eulerity.taskmanager.model.Status;
-       9 import com.eulerity.taskmanager.service.AIService;
-      10 import com.eulerity.taskmanager.service.TaskService;
+       3 import com.project.taskmanager.dto.SubtaskSuggestion;
+       4 import com.project.taskmanager.dto.TaskBreakdownResponse;
+       5 import com.project.taskmanager.dto.TaskResponse;
+       6 import com.project.taskmanager.exception.TaskNotFoundException;
+       7 import com.project.taskmanager.model.Priority;
+       8 import com.project.taskmanager.model.Status;
+       9 import com.project.taskmanager.service.AIService;
+      10 import com.project.taskmanager.service.TaskService;
      … +74 lines (ctrl+o to expand)
 
 ⏺ All 7 files written. The 3 fixes applied:
@@ -24065,16 +24065,16 @@
 
 ⏺ Here is the corrected AIControllerTest.java:
 
-  package com.eulerity.taskmanager.controller;
+  package com.project.taskmanager.controller;
 
-  import com.eulerity.taskmanager.dto.SubtaskSuggestion;
-  import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-  import com.eulerity.taskmanager.dto.TaskResponse;
-  import com.eulerity.taskmanager.exception.TaskNotFoundException;
-  import com.eulerity.taskmanager.model.Priority;
-  import com.eulerity.taskmanager.model.Status;
-  import com.eulerity.taskmanager.service.AIService;
-  import com.eulerity.taskmanager.service.TaskService;
+  import com.project.taskmanager.dto.SubtaskSuggestion;
+  import com.project.taskmanager.dto.TaskBreakdownResponse;
+  import com.project.taskmanager.dto.TaskResponse;
+  import com.project.taskmanager.exception.TaskNotFoundException;
+  import com.project.taskmanager.model.Priority;
+  import com.project.taskmanager.model.Status;
+  import com.project.taskmanager.service.AIService;
+  import com.project.taskmanager.service.TaskService;
   import org.junit.jupiter.api.Test;
   import org.springframework.beans.factory.annotation.Autowired;
   import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24169,7 +24169,7 @@
 
 ⏺ Write(src/test/java/com/eulerity/taskmanager/controller/AIControllerTest.java)
   ⎿  Added 6 lines, removed 2 lines
-      10  import com.eulerity.taskmanager.service.TaskService;
+      10  import com.project.taskmanager.service.TaskService;
       11  import org.junit.jupiter.api.Test;
       12  import org.springframework.beans.factory.annotation.Autowired;
       13 -import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25161,14 +25161,14 @@
   
 ⏺ Write(src/main/java/com/eulerity/taskmanager/service/NoOpAIProvider.java)
   ⎿  Wrote 37 lines to src/main/java/com/eulerity/taskmanager/service/NoOpAIProvider.java
-       1 package com.eulerity.taskmanager.service;
+       1 package com.project.taskmanager.service;
        2 
-       3 import com.eulerity.taskmanager.dto.AITaskSuggestionResponse;
-       4 import com.eulerity.taskmanager.dto.TaskBreakdownResponse;
-       5 import com.eulerity.taskmanager.dto.TaskRequest;
-       6 import com.eulerity.taskmanager.dto.TaskResponse;
-       7 import com.eulerity.taskmanager.model.Priority;
-       8 import com.eulerity.taskmanager.model.Status;
+       3 import com.project.taskmanager.dto.AITaskSuggestionResponse;
+       4 import com.project.taskmanager.dto.TaskBreakdownResponse;
+       5 import com.project.taskmanager.dto.TaskRequest;
+       6 import com.project.taskmanager.dto.TaskResponse;
+       7 import com.project.taskmanager.model.Priority;
+       8 import com.project.taskmanager.model.Status;
        9 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
       10 import org.springframework.stereotype.Service;                                                                                                                                       
      … +27 lines (ctrl+o to expand)
