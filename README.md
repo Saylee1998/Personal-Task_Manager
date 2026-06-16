@@ -1,6 +1,10 @@
 # Personal Task Manager API
 
-Spring Boot task management application with CRUD operations, filtering/search, analytics, AI-powered task assistance, and a frontend UI.
+A full-stack task management application built with Spring Boot, H2, Thymeleaf, and Google Gemini AI.
+
+The application supports task management, analytics dashboards, AI-powered task suggestions, 
+and AI-generated task breakdowns to help users organize and prioritize work more effectively.
+
 
 ---
 
@@ -14,6 +18,7 @@ Spring Boot task management application with CRUD operations, filtering/search, 
 - JUnit 5
 - Google Gemini API
 - HTML/CSS/JavaScript
+- Thymeleaf
 
 ---
 
@@ -34,6 +39,8 @@ Spring Boot task management application with CRUD operations, filtering/search, 
 - Task counts by status and priority
 - Overdue task count
 - Upcoming tasks (next 7 days)
+- Analytics dashboard with visual task distribution by status and priority
+- Active HIGH priority task monitoring
 
 ### Frontend UI
 - Create/manage tasks
@@ -122,17 +129,17 @@ http://localhost:8080
 ```
 
 ---
+## Business Rules
 
-## Validation Rules
-
-- Title required (max 200 chars)
-- Description max 1000 chars
-- Due date must be future date
-- Priority: LOW / MEDIUM / HIGH
-- Status: TODO / IN_PROGRESS / DONE
+- Maximum of 3 active HIGH priority tasks at any time
+- Due date must be a future date
+- Title is required and limited to 200 characters
+- Description is limited to 1000 characters
+- Tasks support LOW, MEDIUM, and HIGH priorities
+- Tasks support TODO, IN_PROGRESS, and DONE statuses
 
 ---
----
+
 
 ## Timestamps
 
@@ -152,27 +159,6 @@ Expected result:
 
 - `createdAt` stays the same
 - `updatedAt` changes to the latest update time
-## Project Structure
-
-```text
-src/main/java/com/eulerity/taskmanager
-├── controller
-├── dto
-├── exception
-├── model
-├── repository
-├── service
-└── TaskManagerApplication.java
-```
-
-Frontend files:
-
-```text
-src/main/resources/static
-├── index.html
-├── css/styles.css
-└── js/app.js
-```
 
 ---
 
